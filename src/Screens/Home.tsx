@@ -17,12 +17,9 @@ class Home extends React.Component  {
         latitudeDelta: 0.06, 
         longitudeDelta: 0.06,
         markers: [{
-            key: 0,
-            latitude: 37.6292,
-            longitude: 126.6576,
-            CallNo: '',
-            Adress: '',
-            Title: ''
+            lat: 37.59523,
+            lng: 127.08600,
+            markerName: 'marker'
         }],
         Ready_Lo : false,
         ConWidth : responsiveWidth(100),
@@ -40,6 +37,7 @@ class Home extends React.Component  {
             timeout: 15000,
         })
         .then(location => {
+            console.log(parseFloat(JSON.stringify(location.latitude)));
             this.setState({
                 Curr_lan : parseFloat(JSON.stringify(location.latitude)),
                 Curr_log : parseFloat(JSON.stringify(location.longitude)),
@@ -60,7 +58,7 @@ class Home extends React.Component  {
     }
 
     async componentDidMount() {
-        //this.geoLocation();
+        this.geoLocation();
     }
     
     deg2rad = (deg:any) =>
@@ -101,26 +99,24 @@ class Home extends React.Component  {
     onGetHeritage = () => {
         //console.log('aa')
         //http://jjsung.o-r.kr/defense/bokjihouse_geoloc?latitude=36.7571865&longitude=127.2241221
-        fetch('jjsung.o-r.kr/defense/bokjihouse_geoloc' + '?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log , {
+        fetch('http://jjsung.o-r.kr/defense/bokjihouse_geoloc' + '?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log , {
               method: 'GET'
         })
         .then((response) => response.json())
         .then((responseJson) => {
-           /*  let hrg_list = Array()
+           let hrg_list = Array()
             responseJson.map((hrg: any, n:number) => {
                 // console.log(hrg.chId)
                 hrg_list.push({
-                    key: Number(hrg.chId),
-                    latitude: Number(hrg.latitude),
-                    longitude: Number(hrg.longitude),
-                    CallNo: '',
-                    Adress: '',
-                    Title: hrg.chName
+                    //key: Number(hrg.chId),
+                    lat: Number(hrg.latitude),
+                    lng: Number(hrg.longitude),
+                    markerName: hrg.chName
                 })
             })
             this.setState({
                 markers: hrg_list,
-            }) */
+            })
         })
         .catch((error) => {
             console.error(error);
@@ -140,23 +136,14 @@ class Home extends React.Component  {
             return  <SafeAreaView>
             <KakaoMapView
               markerImageUrl="https://github.com/jiggag/react-native-kakao-maps/blob/develop/example/custom_image.png?raw=true"
-              markerList={[
-                {
-                  lat: 37.59523,
-                  lng: 127.08600,
-                  markerName: 'marker'
-                },
-                {
-                  lat: 37.59523,
-                  lng: 127.08705,
-                  markerName: 'marker2'
-                },
-              ]}
+              markerList={
+                this.state.markers
+              }
               width={300}
               height={500}
               centerPoint={{
-                lat: 37.59523,
-                lng: 127.08600,
+                lat: this.state.Curr_lan,
+                lng: this.state.Curr_log,
               }}
               onChange={(event) => {
                 console.log('[onChange]', event.nativeEvent);
