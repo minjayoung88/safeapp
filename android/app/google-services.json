@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "274893216980",
+    "project_id": "safeapp-1dd1b",
+    "storage_bucket": "safeapp-1dd1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274893216980:android:bccebded28c6e589452f41",
+        "android_client_info": {
+          "package_name": "com.safeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "274893216980-abge70decs1pqj4hmc9c4720ojagufr1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.safeapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "274893216980-pjhts6u70tfbhcch4ltgdpndsukpmap6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "274893216980-pjhts6u70tfbhcch4ltgdpndsukpmap6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

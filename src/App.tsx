@@ -1,10 +1,13 @@
 import React from "react";
-import RootRouter from './Router';
+import { NavigationContainer } from "@react-navigation/native";
+import BottomTabNavigator from "./navigation/TabNavigator";
 
 const App = () => {
   return (
-    <RootRouter />
-  );
+  <NavigationContainer> 
+    <BottomTabNavigator />
+  </NavigationContainer>
+  )
 };
 
 export default App;

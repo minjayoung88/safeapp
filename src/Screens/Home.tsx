@@ -1,14 +1,14 @@
-import React from 'react';
-import {View, Text, BackHandler, Alert, SafeAreaView} from 'react-native';
+//import React from 'react';
+import * as React from 'react';
+import {View, Text, BackHandler, Image, SafeAreaView} from 'react-native';
 // import MapInfo from '~/Components/Information/ChMapInfo';
 import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
-import MapView, { PROVIDER_GOOGLE, Marker, Callout }  from "react-native-maps";
 import GetLocation from 'react-native-get-location';
 import Styles from "../Assets/Styles/Styles";
-import { NavigationService } from '../Common';
 import IconButton from '../Components/Common/IconButton';
 import UStyle from '../Assets/Styles/Styles';
 import { KakaoMapView } from '@jiggag/react-native-kakao-maps'
+
 
 class Home extends React.Component  {
     state = {
@@ -25,6 +25,7 @@ class Home extends React.Component  {
         ConWidth : responsiveWidth(100),
         ConHeight : responsiveHeight(100) - 125,
         SearchBTN : false,
+        uniqueValue: 1,
     }
     
     constructor(props:any){
@@ -54,13 +55,19 @@ class Home extends React.Component  {
     }
 
     markerClick = (chId:Number) => {
-        NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId}); 
+        //NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId}); 
     }
+    componentDidUpdate(prevProps:any) {
+        console.log("aaa");
+      }
 
     async componentDidMount() {
         this.geoLocation();
+        //this.props.navigation.addListener('willFocus', (route:any) => { 
+        //    console.log("aaa");
+        //});
     }
-    
+
     deg2rad = (deg:any) =>
     {
         return deg * (Math.PI/180);
@@ -132,31 +139,35 @@ class Home extends React.Component  {
     };
 
     render() {
-        //if (this.state.Ready_Lo){
+        if (this.state.Ready_Lo){
             return  <SafeAreaView>
+            <View style={{height: 200, backgroundColor:'#7bc1b2'}}>
+                <Image style={{height: 100, width: 100, marginTop:20}}  source={require('../Assets/Images/shield.png')} />
+            </View>
             <KakaoMapView
               markerImageUrl="https://github.com/jiggag/react-native-kakao-maps/blob/develop/example/custom_image.png?raw=true"
               markerList={
                 this.state.markers
               }
-              width={300}
-              height={500}
+              width={this.state.ConWidth - 1}
+              height={this.state.ConHeight-200}
               centerPoint={{
                 lat: this.state.Curr_lan,
                 lng: this.state.Curr_log,
               }}
               onChange={(event) => {
                 console.log('[onChange]', event.nativeEvent);
-              }}
+                this.onRegionChange.bind(this);
+            }}
             />
           </SafeAreaView>
          
-        //} 
-        //else{
-        //    return  <View style={{height: this.ConHeight, backgroundColor:'white'}}>
-        //                <Text style={Styles.CenterTxtStyle.Text}>{'현재 위치를 검색중입니다....'}</Text>
-        //            </View>
-        //}
+        } 
+        else{
+            return  <View style={{height: this.ConHeight, backgroundColor:'white'}}>
+                        <Text style={Styles.CenterTxtStyle.Text}>{'현재 위치를 검색중입니다....'}</Text>
+                    </View>
+        }
     };
 };
 

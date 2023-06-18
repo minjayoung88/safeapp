@@ -1,65 +1,65 @@
 import React from 'react';
-import { createAppContainer, createSwitchNavigator, StackActions } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import Home from '../Screens/Home';
 import Search from '../Screens/Search';
 import Settings from '../Screens/Settings';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import { NavigationActions } from 'react-navigation';
+// import { NavigationActions } from 'react-navigation';
 
 const HomeScreen = createStackNavigator(
-  {
+    {
+      screen: {
+        screen: Home,
+        navigationOptions:{
+          title: '근처 복지시설 찾기'
+        }
+      },
+    },
+    {
+      headerMode: 'none',
+      navigationOptions: {
+        tabBarOnPress: ({ navigation, defaultHandler }) => {
+          navigation.dispatch(StackActions.reset({
+            index: 0,
+            actions: [NavigationActions.navigate({
+              routeName: 'screen'
+            })]
+          }))
+          defaultHandler();
+        },
+        tabBarButton: () => {}
+      },
+  })
+  
+  const SearchScreen = createStackNavigator({
     screen: {
-      screen: Home,
+      screen: Search,
       navigationOptions:{
-        title: '근처 복지시설 찾기'
+        title: '시설 검색'
       }
     },
   },
   {
-    headerMode: 'none',
     navigationOptions: {
-      tabBarOnPress: ({ navigation, defaultHandler }) => {
-        navigation.dispatch(StackActions.reset({
-          index: 0,
-          actions: [NavigationActions.navigate({
-            routeName: 'screen'
-          })]
-        }))
-        defaultHandler();
-      },
-      tabBarButton: () => {}
-    },
-})
-
-const SearchScreen = createStackNavigator({
-  screen: {
-    screen: Search,
-    navigationOptions:{
-      title: '시설 검색'
+    }
+  })
+  
+  const SettingScreen = createStackNavigator({
+    screen: {
+      screen: Settings,
+      navigationOptions:{
+        title: '설정'
+      }
     }
   },
-},
-{
-  navigationOptions: {
-  }
-})
-
-const SettingScreen = createStackNavigator({
-  screen: {
-    screen: Settings,
-    navigationOptions:{
-      title: '설정'
+  {
+    navigationOptions: {
     }
-  }
-},
-{
-  navigationOptions: {
-  }
-})
+  })
 
-const AuthStack = createBottomTabNavigator(
+  const AuthStack = createBottomTabNavigator(
     {
       Home: HomeScreen,
       Search: SearchScreen,
@@ -91,14 +91,5 @@ const AuthStack = createBottomTabNavigator(
     },
 );
 
-// 최상단 네비게이터
-const AppNavigator = createSwitchNavigator(
-    {
-        Auth: AuthStack
-    },
-    {
-        initialRouteName: 'Auth',
-    }
-);
-
-export default createAppContainer(AppNavigator);
+export default createAppContainer(AuthStack);
+// export default AuthStack;
