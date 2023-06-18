@@ -16,11 +16,12 @@ const screenOptionStyle = {
 
 const MainStackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={screenOptionStyle}>
+    <Stack.Navigator screenOptions={{headerShown: false}} >
       <Stack.Screen name="Home_" component={Home} />
     </Stack.Navigator>
   );
 }
+
 
 const SearchStackNavigator = () => {
   return (
