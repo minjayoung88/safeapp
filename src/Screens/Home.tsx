@@ -30,6 +30,9 @@ class Home extends React.Component  {
         ConHeight : responsiveHeight(100) - 125,
         SearchBTN : false,
         uniqueValue: 1,
+        Region_All:JSON,
+        Region_1 : new Array(),
+        Region_2 : ["전체"],
     }
     
     constructor(props:any){
@@ -58,7 +61,7 @@ class Home extends React.Component  {
         })
     }
 
-    markerClick = (chId:Number) => {
+    markerClick = (seq:Number) => {
         //NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId}); 
     }
 
@@ -104,6 +107,23 @@ class Home extends React.Component  {
         })
     }
 
+    
+    Combo_DO=() =>{
+        //콤보박스 아이템
+        fetch('../Assets/Data/region.json').then(res => res.json())
+        .then(data => {
+            //alert(data);
+            this.state.Region_All= data; 
+            let arr = Object.keys(data);
+            arr.unshift("전체");
+            //데이터 초기화
+            this.state.Region_1= arr;
+            // this.cdr.detectChanges();
+          },
+          error => console.log(error)
+        );
+      }
+    
     onGetHeritage = () => {
         //console.log('aa')
         //http://jjsung.o-r.kr/defense/bokjihouse_geoloc?latitude=36.7571865&longitude=127.2241221
@@ -121,12 +141,12 @@ class Home extends React.Component  {
             responseJson.map((hrg: any, n:number) => {
                 //console.log(hrg)
                  hrg_list.push({
-                     key: Number(hrg.chId),
+                     key: Number(hrg.seq),
                      latitude: Number(hrg.latitude),
                      longitude: Number(hrg.longitude),
-                     CallNo: '',
+                     CallNo: hrg.callnum,
                      Adress: '',
-                     Title: hrg.chName
+                     Title: hrg.name
                  })
             })
             this.setState({
