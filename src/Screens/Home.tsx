@@ -5,12 +5,14 @@ import {View, Text, BackHandler, Image, Alert} from 'react-native';
 import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 import GetLocation from 'react-native-get-location';
 import Styles from "../Assets/Styles/Styles";
-import IconButton from '../Components/Common/IconButton';
+import IconButton from '../Components/Common/IconButton'
+import SelBox from '../Components/Common/SelBox';
 import UStyle from '../Assets/Styles/Styles';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout }  from "react-native-maps";
 import Feather from 'react-native-vector-icons/Feather';
 import * as config from '../Common/config'
 import {Picker} from '@react-native-community/picker';
+import InterestGroup from '../Components/Group/InterestGroup';
 
 class Home extends React.Component  {
     state = {
@@ -158,6 +160,7 @@ class Home extends React.Component  {
     };
 
     ConHeight = responsiveHeight(100) - 125;
+    selNumList:string ='';
     buttonWidth = responsiveWidth(35)
     static navigationOptions = {
         //headerLeft: () => <SideIcon/>,
@@ -174,6 +177,15 @@ class Home extends React.Component  {
         this.setState({Selsigun: val});
     }
 
+    SelGReturn = (arr:Array<number>) => {
+        this.selNumList = '';
+        const InList = config.InterestList;
+        arr.map((v, i) => {
+            const val_ = InList[v].replace('#', '')
+            this.selNumList = this.selNumList.length == 0? val_ : this.selNumList + ',' + val_
+            // this.selNumList.push(InList[v].replace('#', ''))
+        })
+    };
     render() {
         let serviceItems1 = config.SiList.map((s, i) => {
             return <Picker.Item key={i} value={s} label={s} />
@@ -184,21 +196,24 @@ class Home extends React.Component  {
 
         if (this.state.Ready_Lo){
             return  <View style={ {width: this.state.ConWidth, height: this.ConHeight, backgroundColor:'white', flex:1}}>
-            <View style={{height: 200, backgroundColor:'#7bc1b2', flexDirection : "column"}}>
+            <View style={{height: 230, backgroundColor:'#7bc1b2', flexDirection : "column"}}>
                 <View style={{flexDirection : "row"}}>
                     <Image style={{height: 40, width: 40, marginTop:18, marginLeft:80}}  source={require('../Assets/Images/shield.png')} />
                     <Text style={{fontSize:23, color:'black', marginTop:23, marginLeft:10}}>안전한 여행도우미</Text>
                 </View>
                 <Text style={{fontSize:20, color:'white', marginTop:10, marginLeft:40}}>복지시설과 할인음식점을 검색해보세요.</Text>
-                <View style={{flexDirection : "row", marginTop:20, marginLeft: 35}}>
-                    <View style={config.styles.Picker_View}>
-                        <Picker enabled={true} style={[config.styles.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsi}
+                <View style={{flexDirection : "row", marginTop:15, marginLeft: 15}}>
+                    <InterestGroup SelList={[]} Editable={true} returnEVT={this.SelGReturn} ViewStyle={UStyle.SelBox.View_style} selBoxList={config.InterestList}></InterestGroup>
+                </View>
+                <View style={{flexDirection : "row", marginTop:15, marginLeft: 30}}>
+                    <View style={UStyle.Pickstyle.Picker_View}>
+                        <Picker enabled={true} style={[UStyle.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsi}
                         onValueChange={(itemValue) =>this.selsiReturn(itemValue)}>
                             {serviceItems1}
                         </Picker>
                     </View>
-                    <View style={config.styles.Picker_View}>
-                        <Picker enabled={true} style={[config.styles.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsigun}
+                    <View style={UStyle.Pickstyle.Picker_View}>
+                        <Picker enabled={true} style={[UStyle.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsigun}
                         onValueChange={(itemValue) =>this.selsigunReturn(itemValue)}>
                              {serviceItems2}
                         </Picker>

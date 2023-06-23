@@ -53,17 +53,33 @@ const Regstyles = StyleSheet.create({
     }
 });
 
+const Pickstyle = StyleSheet.create({
+    Picker_View: {
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: 'darkgrey',
+        height:40,
+        width: 140,
+        backgroundColor: 'white',
+        marginRight: 15
+    },
+    Picker_style: {
+        fontSize : 15,
+        height:40,
+        width: 140,
+    },
+ })
+
 const SelBox = StyleSheet.create({
     View_style: {
-        height : 40,
-        marginTop: 10,
+        height : 30,
         marginLeft: 8,
         // marginLeft : 'auto',
         // marginRight : 'auto',
         // marginBottom : 5,
         borderStyle: 'solid',
         borderWidth: 1.5,
-        borderColor: '#D5D5D5',
+        borderColor: 'darkgrey',
         borderRadius :10,
         // color:'red'
     },
@@ -90,8 +106,8 @@ const SelBox = StyleSheet.create({
         // color:'red'
     },
     View_Text:{
-        margin : 6,
-        fontSize : 15,
+        margin : 4,
+        fontSize : 13,
         textAlign: 'center',
         textAlignVertical: 'center'
     }
@@ -292,4 +308,4 @@ const Iconstyles = StyleSheet.create({
         marginLeft: 50
     }
 });
-export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles};
+export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle};
