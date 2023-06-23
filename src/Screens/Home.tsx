@@ -1,6 +1,6 @@
 //import React from 'react';
 import * as React from 'react';
-import {View, Text, BackHandler, Image, SafeAreaView} from 'react-native';
+import {View, Text, BackHandler, Image, Alert} from 'react-native';
 // import MapInfo from '~/Components/Information/ChMapInfo';
 import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 import GetLocation from 'react-native-get-location';
@@ -8,8 +8,9 @@ import Styles from "../Assets/Styles/Styles";
 import IconButton from '../Components/Common/IconButton';
 import UStyle from '../Assets/Styles/Styles';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout }  from "react-native-maps";
-import ComboBox from '../Components/Common/ComboBox';
+import Feather from 'react-native-vector-icons/Feather';
 import * as config from '../Common/config'
+import {Picker} from '@react-native-community/picker';
 
 class Home extends React.Component  {
     state = {
@@ -30,11 +31,13 @@ class Home extends React.Component  {
         ConHeight : responsiveHeight(100) - 125,
         SearchBTN : false,
         uniqueValue: 1,
-        Region_All:JSON,
+        Selsi: '강원도',
+        Selsigun: '전체',
         Region_1 : new Array(),
-        Region_2 : ["전체"],
+        Region_2 : ["전체", "강릉시","고성군","삼척시","속초시","양양군","토성군","평창군","홍천군","횡성군","원주시","춘천시"],
+        //Region_All:JSON,
     }
-    
+    //const Region_All:any;
     constructor(props:any){
         super(props);
     }
@@ -53,7 +56,7 @@ class Home extends React.Component  {
                 longitudeDelta: 0.06,
                 Ready_Lo : true,
             })
-            this.onGetHeritage()
+            this.onGetHeritage("1");
         })
         .catch(error => {
             const { code, message } = error;
@@ -67,9 +70,6 @@ class Home extends React.Component  {
 
     async componentDidMount() {
         this.geoLocation();
-        //this.props.navigation.addListener('willFocus', (route:any) => { 
-        //    console.log("aaa");
-        //});
     }
 
     deg2rad = (deg:any) =>
@@ -107,38 +107,23 @@ class Home extends React.Component  {
         })
     }
 
-    
-    Combo_DO=() =>{
-        //콤보박스 아이템
-        fetch('../Assets/Data/region.json').then(res => res.json())
-        .then(data => {
-            //alert(data);
-            this.state.Region_All= data; 
-            let arr = Object.keys(data);
-            arr.unshift("전체");
-            //데이터 초기화
-            this.state.Region_1= arr;
-            // this.cdr.detectChanges();
-          },
-          error => console.log(error)
-        );
-      }
-    
-    onGetHeritage = () => {
-        //console.log('aa')
-        //http://jjsung.o-r.kr/defense/bokjihouse_geoloc?latitude=36.7571865&longitude=127.2241221
-        //5. /restaurant_basic (시도 및 시군구에 해당하는 복지시설 리턴)
-//input : sido, sigungu
-
-        console.log('http://jjsung.o-r.kr/defense/bokjihouseLocationNear ' + '?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log);
-        fetch('http://jjsung.o-r.kr/defense/bokjihouseLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log , {
+    onGetHeritage = (Gubun:string) => {
+        //console.log('http://jjsung.o-r.kr/defense/bokjihouseLocationNear ' + '?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log);
+        let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/bokjihouseLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/bokjihouse_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
+        console.log(reqUrl);
+        fetch(reqUrl , {
               method: 'GET'
         })
         .then((response) => response.json())
         .then((responseJson) => {
+            console.log(responseJson);
            let hrg_list = Array()
-           console.log(responseJson);
+           let sum_lat = 0;
+           let sum_lon = 0;
+
             responseJson.map((hrg: any, n:number) => {
+                sum_lat = sum_lat + Number(hrg.latitude);
+                sum_lon = sum_lon + Number(hrg.longitude);
                 //console.log(hrg)
                  hrg_list.push({
                      key: Number(hrg.seq),
@@ -152,25 +137,51 @@ class Home extends React.Component  {
             this.setState({
                 markers: hrg_list,
             })
+            let count_ = hrg_list.length;
+           
+            if(Gubun != "1"){
+                if(count_ > 0){
+                    let con_lat = (sum_lat/count_).toFixed(7);
+                    let con_lon = (sum_lon/count_).toFixed(7);
+                    this.setState({Curr_lan: parseFloat(con_lat)});
+                    this.setState({Curr_log: parseFloat(con_lon)});
+                    this.setState({latitudeDelta:0.99});
+                    this.setState({longitudeDelta:0.99});
+                }else {
+                    Alert.alert("검색결과가 없습니다.");
+                }
+            }
         })
         .catch((error) => {
             console.error(error);
         });
-        //Alert.alert(responseJson);
     };
 
     ConHeight = responsiveHeight(100) - 125;
     buttonWidth = responsiveWidth(35)
-    selSi:string = '';
     static navigationOptions = {
         //headerLeft: () => <SideIcon/>,
     };
+    Region_All:any = JSON.parse(JSON.stringify(require('../Assets/Data/region.json')));
+    //this.state.Region_All = JSON.parse(JSON.stringify(MenuList_));
 
-    selsiReturn = (val: string) => {
-        this.selSi = val;
+    selsiReturn = (val: any) => {
+        this.setState({Selsi: val})
+        this.setState({Region_2: this.Region_All[val]});
+    }
+
+    selsigunReturn = (val: any) => {
+        this.setState({Selsigun: val});
     }
 
     render() {
+        let serviceItems1 = config.SiList.map((s, i) => {
+            return <Picker.Item key={i} value={s} label={s} />
+        });
+        let serviceItems2 = this.state.Region_2.map((s, i) => {
+            return <Picker.Item key={i} value={s} label={s} />
+        });
+
         if (this.state.Ready_Lo){
             return  <View style={ {width: this.state.ConWidth, height: this.ConHeight, backgroundColor:'white', flex:1}}>
             <View style={{height: 200, backgroundColor:'#7bc1b2', flexDirection : "column"}}>
@@ -179,7 +190,22 @@ class Home extends React.Component  {
                     <Text style={{fontSize:23, color:'black', marginTop:23, marginLeft:10}}>안전한 여행도우미</Text>
                 </View>
                 <Text style={{fontSize:20, color:'white', marginTop:10, marginLeft:40}}>복지시설과 할인음식점을 검색해보세요.</Text>
-                <ComboBox returnEVT={this.selsiReturn} enabled={true} Items={config.SiList} SelectValue={this.selSi}></ComboBox>
+                <View style={{flexDirection : "row", marginTop:20, marginLeft: 35}}>
+                    <View style={config.styles.Picker_View}>
+                        <Picker enabled={true} style={[config.styles.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsi}
+                        onValueChange={(itemValue) =>this.selsiReturn(itemValue)}>
+                            {serviceItems1}
+                        </Picker>
+                    </View>
+                    <View style={config.styles.Picker_View}>
+                        <Picker enabled={true} style={[config.styles.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsigun}
+                        onValueChange={(itemValue) =>this.selsigunReturn(itemValue)}>
+                             {serviceItems2}
+                        </Picker>
+                    </View>
+                    <Feather name="search" color="black" size={30} style={{marginTop:5}} onPress={() => this.onGetHeritage("2")}/>
+                </View>
+                
             </View>
             
             <MapView
@@ -213,7 +239,7 @@ class Home extends React.Component  {
             </MapView>
             { this.state.SearchBTN && 
             <View style={{position: 'absolute', top: 215, left: this.buttonWidth}}>
-                <IconButton Name={'refresh'} BTNText={"현 지도에서 검색"} onPressBTN={() => {this.onGetHeritage()}} BTNstyle= {UStyle.BTNStyle.Mapbutton} Textstyle= {UStyle.BTNStyle.text}></IconButton>
+                <IconButton Name={'refresh'} BTNText={"현 지도에서 검색"} onPressBTN={() => {this.onGetHeritage("1")}} BTNstyle= {UStyle.BTNStyle.Mapbutton} Textstyle= {UStyle.BTNStyle.text}></IconButton>
             </View>
             }
         </View>
@@ -228,6 +254,4 @@ class Home extends React.Component  {
 };
 
 export default Home;
-
-
   
