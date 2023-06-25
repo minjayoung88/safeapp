@@ -2,6 +2,7 @@ import React, { Component, ReactText } from 'react';
 import { View, Text, StyleSheet } from 'react-native'
 import {Picker} from '@react-native-community/picker';
 import * as config from '../../Common/config'
+import Styles from "../../Assets/Styles/Styles";
 
  interface Props {
     Items : string[];
@@ -27,8 +28,8 @@ class PickerExample extends Component<Props> {
         });
 
         return (
-            <View style={config.styles.Picker_View}>
-                <Picker enabled={this.state.enabled} style={[config.styles.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.selectedItem}
+            <View style={Styles.Pickstyle.Picker_View}>
+                <Picker enabled={this.state.enabled} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.selectedItem}
                 onValueChange={(itemValue) =>this.CHGEvent(itemValue)}>
                     {serviceItems}
                 </Picker>

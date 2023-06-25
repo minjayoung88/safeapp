@@ -1,43 +1,49 @@
-//import React from 'react';
-import * as React from 'react';
-import {View, Text, BackHandler, Image, Alert} from 'react-native';
+import React, { useEffect, useRef, useState } from "react";
+import {View, Text, Animated, Image, Alert} from 'react-native';
 // import MapInfo from '~/Components/Information/ChMapInfo';
 import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
 import GetLocation from 'react-native-get-location';
 import Styles from "../Assets/Styles/Styles";
 import IconButton from '../Components/Common/IconButton'
-import SelBox from '../Components/Common/SelBox';
 import UStyle from '../Assets/Styles/Styles';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout }  from "react-native-maps";
 import Feather from 'react-native-vector-icons/Feather';
 import * as config from '../Common/config'
 import {Picker} from '@react-native-community/picker';
 import InterestGroup from '../Components/Group/InterestGroup';
+import SlideUpAndDown from '../Components/Group/SlideUpAndDown'
+import { Double } from "react-native/Libraries/Types/CodegenTypes";
 
+  
 class Home extends React.Component  {
     state = {
         Curr_lan : 36.143099,
         Curr_log : 128.392905,
-        latitudeDelta: 0.06, 
-        longitudeDelta: 0.06,
+        Save_lan : 36.143099,
+        Save_log : 128.392905,
+        latitudeDelta: 0.99, 
+        longitudeDelta: 0.99,
         markers: [{
             key: 0,
+            icon: '',
             latitude: 37.6292,
             longitude: 126.6576,
             CallNo: '',
             Adress: '',
-            Title: ''
+            Title: '',
+            pinColor : 'yellow',
+            onEvent : () => {},
         }],
         Ready_Lo : false,
         ConWidth : responsiveWidth(100),
         ConHeight : responsiveHeight(100) - 125,
         SearchBTN : false,
+        sigunSearch : false,
         uniqueValue: 1,
         Selsi: '강원도',
         Selsigun: '전체',
         Region_1 : new Array(),
         Region_2 : ["전체", "강릉시","고성군","삼척시","속초시","양양군","토성군","평창군","홍천군","횡성군","원주시","춘천시"],
-        //Region_All:JSON,
     }
     //const Region_All:any;
     constructor(props:any){
@@ -54,11 +60,13 @@ class Home extends React.Component  {
             this.setState({
                 Curr_lan : parseFloat(JSON.stringify(location.latitude)),
                 Curr_log : parseFloat(JSON.stringify(location.longitude)),
-                latitudeDelta: 0.06, 
-                longitudeDelta: 0.06,
+                Save_lan : parseFloat(JSON.stringify(location.latitude)),
+                Save_log : parseFloat(JSON.stringify(location.longitude)),
+                latitudeDelta: 0.29, 
+                longitudeDelta: 0.29,
                 Ready_Lo : true,
             })
-            this.onGetHeritage("1");
+            this.onGetBokji("1", "1", "1");
         })
         .catch(error => {
             const { code, message } = error;
@@ -66,8 +74,11 @@ class Home extends React.Component  {
         })
     }
 
-    markerClick = (seq:Number) => {
+    markerClick = (lan:Double, log:Double) => {
         //NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId}); 
+        console.log(lan);
+        console.log(log);
+        
     }
 
     async componentDidMount() {
@@ -93,12 +104,13 @@ class Home extends React.Component  {
         return R * c;
     }
     onRegionChange = (region:any) => {
-        const pair1 = [this.state.Curr_lan, this.state.Curr_log]
+        const pair1 = [this.state.Save_lan, this.state.Save_log]
         const pair2 = [region.latitude, region.longitude]
         
         const dis = this.getDistance(pair1, pair2)
-        const CHK = dis >= 3? true : false 
-
+        
+        const CHK = dis >= 3? true : false
+        
         this.setState({
             Curr_lan : region.latitude,
             Curr_log : region.longitude,
@@ -108,49 +120,157 @@ class Home extends React.Component  {
             SearchBTN : CHK,
         })
     }
-
-    onGetHeritage = (Gubun:string) => {
-        //console.log('http://jjsung.o-r.kr/defense/bokjihouseLocationNear ' + '?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log);
+    // Gubun : 위치검색(위경도) -> 1, 시도시군구검색 구분 -> 2
+    // Gubun2 : 위치가 이동된 후 현위치검색 버튼을 눌러서 온경우 -> 2
+    // Gubun3 : 복지시설, 할인음식점 둘 다 선택한 상태로 검색한 경우 -> 2
+    Save_marker:any = new Array();
+    onGetBokji = (Gubun:string, Gubun2:string, Gubun3:string) => {
         let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/bokjihouseLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/bokjihouse_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
-        console.log(reqUrl);
+        //console.log(reqUrl);
         fetch(reqUrl , {
               method: 'GET'
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson);
-           let hrg_list = Array()
-           let sum_lat = 0;
-           let sum_lon = 0;
+            //console.log(responseJson);
+            this.Save_marker = new Array();
+            let hrg_list = Array();
+            let sum_lat = 0;
+            let sum_lon = 0;
 
             responseJson.map((hrg: any, n:number) => {
                 sum_lat = sum_lat + Number(hrg.latitude);
                 sum_lon = sum_lon + Number(hrg.longitude);
                 //console.log(hrg)
                  hrg_list.push({
-                     key: Number(hrg.seq),
-                     latitude: Number(hrg.latitude),
-                     longitude: Number(hrg.longitude),
-                     CallNo: hrg.callnum,
-                     Adress: '',
-                     Title: hrg.name
-                 })
+                    icon : 'hotel',
+                    key: Number(hrg.seq),
+                    latitude: Number(hrg.latitude),
+                    longitude: Number(hrg.longitude),
+                    CallNo: hrg.callnum,
+                    Adress: hrg.alladdr,
+                    Title: hrg.name,
+                    pinColor : '#11609c',
+                 });
             })
+            this.Save_marker = hrg_list;
             this.setState({
                 markers: hrg_list,
             })
             let count_ = hrg_list.length;
-           
+        
+            //console.log("Gubun:" + Gubun);
+            //시군구로 검색했을때
             if(Gubun != "1"){
+                //this.state.Save_lan, this.state.Save_log
                 if(count_ > 0){
                     let con_lat = (sum_lat/count_).toFixed(7);
                     let con_lon = (sum_lon/count_).toFixed(7);
-                    this.setState({Curr_lan: parseFloat(con_lat)});
-                    this.setState({Curr_log: parseFloat(con_lon)});
-                    this.setState({latitudeDelta:0.99});
-                    this.setState({longitudeDelta:0.99});
+                    this.setState({
+                        Curr_lan : parseFloat(con_lat),
+                        Curr_log : parseFloat(con_lon),
+                        latitudeDelta:1,
+                        longitudeDelta:1,
+                        Save_lan : parseFloat(con_lat),
+                        Save_log : parseFloat(con_lon),
+                        SearchBTN : false,
+                    })
                 }else {
-                    Alert.alert("검색결과가 없습니다.");
+                    if(Gubun3 !="2"){
+                        Alert.alert("검색결과가 없습니다.");
+                    }
+                }
+                //console.log("시군구검색하고, 현위치 변경");
+            }
+
+            //현위치 검색을 누를때
+            if(Gubun2 != "1"){
+                if(count_ > 0){
+                    let con_lat = (sum_lat/count_).toFixed(7);
+                    let con_lon = (sum_lon/count_).toFixed(7);
+                    this.setState({
+                        Save_lan : parseFloat(con_lat),
+                        Save_log : parseFloat(con_lon),
+                        SearchBTN : false,
+                    })
+                }
+            }
+            //console.log("Gubun3:" + Gubun3);
+            if(Gubun3 != "1"){
+                //console.log("a");
+                this.onGetRes(Gubun, Gubun2, Gubun3);
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    };
+
+    onGetRes = (Gubun:string, Gubun2:string, Gubun3:string) => {
+        
+        let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/restaurantLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/restaurant_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
+        //console.log(reqUrl);
+        fetch(reqUrl , {
+              method: 'GET'
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            //console.log(responseJson);
+            let Res_list = Array()
+            let sum_lat = 0;
+            let sum_lon = 0;
+
+            responseJson.map((hrg: any, n:number) => {
+                sum_lat = sum_lat + Number(hrg.latitude);
+                sum_lon = sum_lon + Number(hrg.longitude);
+                //console.log(hrg)
+                Res_list.push({
+                    icon : 'restaurant',
+                    key: Number(hrg.seq),
+                    latitude: Number(hrg.latitude),
+                    longitude: Number(hrg.longitude),
+                    CallNo: hrg.callnum,
+                    Adress: hrg.address,
+                    Title: hrg.store_name,
+                    pinColor : '#8A2BE2',
+                 })
+            })
+            const before_marker = this.Save_marker;
+            this.Save_marker = Gubun3 == "2"? this.Save_marker.concat(Res_list) : Res_list;
+            this.setState({
+                markers: this.Save_marker,
+            })
+            let count_ = this.Save_marker.length;
+           
+            //할인음식점만 선택하고 검색했을경우
+            if(before_marker.length == 0){
+                 if(count_ > 0){
+                     let con_lat = (sum_lat/count_).toFixed(7);
+                     let con_lon = (sum_lon/count_).toFixed(7);
+                     this.setState({
+                         Curr_lan : parseFloat(con_lat),
+                         Curr_log : parseFloat(con_lon),
+                         latitudeDelta:1,
+                         longitudeDelta:1,
+                         Save_lan : parseFloat(con_lat),
+                         Save_log : parseFloat(con_lon),
+                         SearchBTN : false,
+                     })
+                 }else {
+                     Alert.alert("검색결과가 없습니다.");
+                 }
+            }
+
+            //현위치 검색을 누를때
+            if(Gubun2 != "1"){
+                if(count_ > 0){
+                    let con_lat = (sum_lat/count_).toFixed(7);
+                    let con_lon = (sum_lon/count_).toFixed(7);
+                    this.setState({
+                        Save_lan : parseFloat(con_lat),
+                        Save_log : parseFloat(con_lon),
+                        SearchBTN : false,
+                    })
                 }
             }
         })
@@ -160,14 +280,14 @@ class Home extends React.Component  {
     };
 
     ConHeight = responsiveHeight(100) - 125;
-    selNumList:string ='';
+    
     buttonWidth = responsiveWidth(35)
     static navigationOptions = {
         //headerLeft: () => <SideIcon/>,
     };
     Region_All:any = JSON.parse(JSON.stringify(require('../Assets/Data/region.json')));
     //this.state.Region_All = JSON.parse(JSON.stringify(MenuList_));
-
+    selNumList:string = '';
     selsiReturn = (val: any) => {
         this.setState({Selsi: val})
         this.setState({Region_2: this.Region_All[val]});
@@ -178,14 +298,16 @@ class Home extends React.Component  {
     }
 
     SelGReturn = (arr:Array<number>) => {
+        //console.log("선택값:" + arr);
         this.selNumList = '';
         const InList = config.InterestList;
         arr.map((v, i) => {
-            const val_ = InList[v].replace('#', '')
-            this.selNumList = this.selNumList.length == 0? val_ : this.selNumList + ',' + val_
-            // this.selNumList.push(InList[v].replace('#', ''))
+            //const val_ = InList[v].replace('#', '')
+            this.selNumList = this.selNumList.length == 0? v.toString() : this.selNumList + ',' + v.toString();
         })
     };
+  
+
     render() {
         let serviceItems1 = config.SiList.map((s, i) => {
             return <Picker.Item key={i} value={s} label={s} />
@@ -196,7 +318,7 @@ class Home extends React.Component  {
 
         if (this.state.Ready_Lo){
             return  <View style={ {width: this.state.ConWidth, height: this.ConHeight, backgroundColor:'white', flex:1}}>
-            <View style={{height: 230, backgroundColor:'#7bc1b2', flexDirection : "column"}}>
+            <View style={{height: 220, backgroundColor:'#888FC7', flexDirection : "column"}}>
                 <View style={{flexDirection : "row"}}>
                     <Image style={{height: 40, width: 40, marginTop:18, marginLeft:80}}  source={require('../Assets/Images/shield.png')} />
                     <Text style={{fontSize:23, color:'black', marginTop:23, marginLeft:10}}>안전한 여행도우미</Text>
@@ -218,7 +340,21 @@ class Home extends React.Component  {
                              {serviceItems2}
                         </Picker>
                     </View>
-                    <Feather name="search" color="black" size={30} style={{marginTop:5}} onPress={() => this.onGetHeritage("2")}/>
+                    <Feather name="search" color="black" size={30} style={{marginTop:5}} onPress={() => {
+                        
+                            const arr_ = this.selNumList.split(',');
+                            //둘다 선택되어진경우, 복지시설 -> 할인음식점 순서대로
+                            //console.log("선택값 :" +arr_);
+                            if(arr_.length == 2){
+                                this.onGetBokji("2", "1", "2");
+                            }else{
+                                if(arr_[0] == "1"){
+                                    this.Save_marker = new Array();
+                                    this.onGetRes("2", "1", "1");
+                                }else{this.onGetBokji("2", "1", "1");}
+                            }
+                        }
+                    }/>
                 </View>
                 
             </View>
@@ -242,10 +378,18 @@ class Home extends React.Component  {
                                     longitude: Number(marker.longitude),
                                 }}
                                 key= {Number(marker.key)}
-                                pinColor='skyblue'
+                                pinColor={marker.pinColor}
                                 zIndex={-1}
+                                onPress={() => 
+                                {
+                                    this.setState({
+                                        Save_lan : Number(marker.latitude),
+                                        Save_log : Number(marker.longitude),
+                                        SearchBTN : false,
+                                    })
+                                }}
                             >
-                                <Callout style={{zIndex:-1}} onPress={() => this.markerClick(Number(marker.key))}>
+                                <Callout style={{zIndex:-1}} onPress={() => this.markerClick(Number(marker.latitude), Number(marker.longitude))}>
                                     {/* <MapInfo ChId={Number(marker.key)} ChAddress={marker.Adress} ChCallNo={marker.CallNo} ChTitle={marker.Title}/> */}
                                     <Text style={{height:45, textAlignVertical:'center'}}>{marker.Title}</Text>
                                 </Callout>
@@ -253,10 +397,25 @@ class Home extends React.Component  {
                         ))}
             </MapView>
             { this.state.SearchBTN && 
-            <View style={{position: 'absolute', top: 215, left: this.buttonWidth}}>
-                <IconButton Name={'refresh'} BTNText={"현 지도에서 검색"} onPressBTN={() => {this.onGetHeritage("1")}} BTNstyle= {UStyle.BTNStyle.Mapbutton} Textstyle= {UStyle.BTNStyle.text}></IconButton>
+            <View style={{position: 'absolute', top: 235, left: this.buttonWidth}}>
+                <IconButton Name={'refresh'} BTNText={"현 지도에서 검색"} onPressBTN={() => {
+                    const arr_ = this.selNumList.split(',');
+                    //둘다 선택되어진경우, 복지시설 -> 할인음식점 순서대로
+                    console.log("선택값 :" +arr_);
+                    if(arr_.length == 2){
+                        this.onGetBokji("1", "2", "2");
+                    }else{
+                        if(arr_[0] == "1"){
+                            this.Save_marker = new Array();
+                            this.onGetRes("1", "2", "1");
+                        }else{this.onGetBokji("1", "2", "1");}
+                    }
+                    }
+                } BTNstyle= {UStyle.BTNStyle.Mapbutton} Textstyle= {UStyle.BTNStyle.text}></IconButton>
             </View>
             }
+           <SlideUpAndDown RegionArray={this.Save_marker}/>
+
         </View>
          
         } 

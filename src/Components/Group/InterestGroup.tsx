@@ -15,21 +15,26 @@ const styles = StyleSheet.create({
     selBoxList: Array<string>;
     ViewStyle : StyleProp<ViewStyle>;
     returnEVT : (arr:Array<number>) => void;
-    SelList : Array<number>;
     Editable : boolean;
+    SelList : Array<number>;
  }
 
 interface State {
     bg: Array<string>;
     TColor: Array<string>;
 }
-const InterestGroup = ({selBoxList, ViewStyle, returnEVT, SelList, Editable}: Props) => {
+const InterestGroup = ({selBoxList, ViewStyle, returnEVT, Editable, SelList}: Props) => {
     const boxList = [];
     const bgList:Array<string> = [];
     const TColorList:Array<string> = [];
 
+    const [bgStyle, SetbgStyle] = useState<State>({
+        bg: bgList,
+        TColor:TColorList
+    });
+
     for(let j=0; j < selBoxList.length; j++){
-        if(SelList.indexOf(j) > -1){
+        if(j == 0){
             bgList.push(config.BackColor);
             TColorList.push("white");
             
@@ -37,40 +42,42 @@ const InterestGroup = ({selBoxList, ViewStyle, returnEVT, SelList, Editable}: Pr
             bgList.push("white");
             TColorList.push("grey");
         }
+
+        if(SelList.indexOf(j) < 0 && bgStyle.bg[j] != "white"){
+            SelList.push(j);
+            returnEVT(SelList);
+        }
     }
-    const [bgStyle, SetbgStyle] = useState<State>({
-        bg: bgList,
-        TColor:TColorList
-    });
     
     const CHGEvent = (i:number) => {
         if(Editable){
-            bgStyle.bg[i] = bgStyle.bg[i] =="white"? config.BackColor : "white";
-            bgStyle.TColor[i] = bgStyle.TColor[i] =="grey"? "white" : "grey";
+            if(bgStyle.bg[i] =="white"){
+                bgStyle.bg[i] = config.BackColor;
+                bgStyle.TColor[i] = "white";
+                if(SelList.indexOf(i) < 0){
+                    SelList.push(i);
+                    returnEVT(SelList);
+                }
+            }else {
+                if(SelList.length > 1){
+                    bgStyle.bg[i] = "white";
+                    bgStyle.TColor[i] = "grey";
+
+                    if(SelList.indexOf(i) > -1){
+                        SelList.splice(SelList.indexOf(i), 1);
+                        returnEVT(SelList);
+                    }
+                }
+            }
            
             SetbgStyle({
                 bg: bgStyle.bg,
                 TColor: bgStyle.TColor,
             });
-            //선택시
-            if(bgStyle.TColor[i] == "white"){
-                //Rearr.push(i);
-                if(SelList.indexOf(i) < 0){
-                    SelList.push(i);
-                    returnEVT(SelList);
-                }
-               
-            }else{
-                if(SelList.indexOf(i) > -1){
-                    SelList.splice(SelList.indexOf(i), 1);
-                    returnEVT(SelList);
-                }
-                
-            }
         }
     }
 
-    for (let i:number = 0; i <selBoxList.length; i= i+3) {
+    for (let i:number = 0; i <selBoxList.length; i= i+2) {
         
         boxList.push(
             <View style={styles.SelView} key={i.toString() + 'View'}>

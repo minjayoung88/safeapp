@@ -2,7 +2,7 @@
 import {StyleSheet } from 'react-native'
 export const TFont = "NanumBarunpenR"
 export const TFontB = "NanumBarunpenB"
-export const BackColor = "#437eb4" 
+export const BackColor = "#5F4B8B" 
 export const BackColorB = "#078196"
 export const InterestList = ['복지시설', '할인음식점']
 export const AgeRangeList = ['0-9','10-19','20-29','30-39','40-49','50-59','60-69', '70-79', '80-89', '90-99']
