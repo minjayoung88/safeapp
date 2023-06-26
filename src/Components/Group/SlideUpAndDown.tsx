@@ -12,6 +12,7 @@ interface Props {
 const SlideUpAndDown = ({RegionArray}:Props) => {
     const animation = useRef(new Animated.Value(0)).current;
     const [enabled, setEnabled] = useState(true);
+    const [move, setMove] = useState(false);
     const boxList = [];
     useEffect(() => {
       Animated.timing(animation, {
@@ -22,7 +23,20 @@ const SlideUpAndDown = ({RegionArray}:Props) => {
 
     for (let i:number = 0; i <RegionArray.length; i= i+1) {
       boxList.push(
-          <RegionComp icon={RegionArray[i].icon} lan={RegionArray[i].latitude} log={RegionArray[i].longitude} Name={RegionArray[i].Title} CallNo={RegionArray[i].CallNo} Adress={RegionArray[i].Adress} onPressBTN={() => {}}/>
+          <RegionComp key={i} icon={RegionArray[i].icon} lan={RegionArray[i].latitude} log={RegionArray[i].longitude} Name={RegionArray[i].Title} CallNo={RegionArray[i].CallNo} Adress={RegionArray[i].Adress} onPressBTN={() => {
+            //상세화면 불러오기
+            let reqUrl = RegionArray[i].icon == "hotel"? 'http://jjsung.o-r.kr/defense/bokjihouse_detail?latitude=' + RegionArray[i].latitude + '&longitude=' + RegionArray[i].longitude : 'http://jjsung.o-r.kr/defense/restaurant_detail?latitude=' + RegionArray[i].latitude + '&longitude=' + RegionArray[i].longitude
+            //console.log(reqUrl);
+            fetch(reqUrl , {
+                  method: 'GET'
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+              console.log(responseJson);
+            });
+            //View display none하고 상세화면 display
+            setMove(true);
+          }}/>
       )
       
     }
@@ -31,15 +45,18 @@ const SlideUpAndDown = ({RegionArray}:Props) => {
           <View style={{height: responsiveHeight(100) - 310}}>
             <View style={{height: 40, borderBottomWidth: 1, borderColor: '#d0d0d0', width: responsiveWidth(100) - 20, marginLeft: 10, alignItems:'center'}} 
               onTouchEnd={() => { setEnabled(!enabled);}}>
-              <Feather key="up" name="chevron-up" color="#d0d0d0" size={30} style={enabled?UStyle.btnstyle_.style2: UStyle.btnstyle_.style1} />
-              <Feather key="down" name="chevron-down" color="#d0d0d0" size={30} style={enabled?UStyle.btnstyle_.style1: UStyle.btnstyle_.style2} />
+              <Feather key="up" name="chevron-up" color="#d0d0d0" size={30} style={[{marginTop:5}, enabled?UStyle.btnstyle_.style2: UStyle.btnstyle_.style1]} />
+              <Feather key="down" name="chevron-down" color="#d0d0d0" size={30} style={[{marginTop:5}, enabled?UStyle.btnstyle_.style1: UStyle.btnstyle_.style2]} />
             </View>
             <View style={{height: responsiveHeight(100) - 370}}>
               <ScrollView>
-                {boxList}
+                <View style={move?UStyle.btnstyle_.style1: UStyle.btnstyle_.style2}>{boxList}</View>
+                <View style={move?UStyle.btnstyle_.style2 : UStyle.btnstyle_.style1}>
+
+
+                </View>
               </ScrollView>
             </View>
-           
           </View>
         </Animated.View>
     );

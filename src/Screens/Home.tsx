@@ -318,7 +318,7 @@ class Home extends React.Component  {
 
         if (this.state.Ready_Lo){
             return  <View style={ {width: this.state.ConWidth, height: this.ConHeight, backgroundColor:'white', flex:1}}>
-            <View style={{height: 220, backgroundColor:'#888FC7', flexDirection : "column"}}>
+            <View style={Styles.Regionstyle.Home_View}>
                 <View style={{flexDirection : "row"}}>
                     <Image style={{height: 40, width: 40, marginTop:18, marginLeft:80}}  source={require('../Assets/Images/shield.png')} />
                     <Text style={{fontSize:23, color:'black', marginTop:23, marginLeft:10}}>안전한 여행도우미</Text>

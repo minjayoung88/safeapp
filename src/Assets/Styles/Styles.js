@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimensions";
+import * as config from '../../Common/config'
+import { responsiveWidth } from "react-native-responsive-dimensions";
 
 const Regstyles = StyleSheet.create({
     ContainerView: {
@@ -68,15 +69,48 @@ const Pickstyle = StyleSheet.create({
         height:40,
         width: 140,
     },
- })
+ });
+
+ const Regionstyle = StyleSheet.create({
+    Region_View: {
+        backgroundColor:'white', 
+        height: 85, 
+        width: responsiveWidth(100) - 40, 
+        borderRadius: 10, 
+        borderWidth:2, 
+        borderColor: config.BackColor, 
+        padding: 10, 
+        flexDirection:'row',
+        shadowColor: "#000",
+        shadowOffset: {
+        width: 0,
+        height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+
+    Home_View: {
+        height: 220, 
+        backgroundColor:'#888FC7', 
+        flexDirection : "column",
+        shadowColor: "#000",
+        shadowOffset: {
+        width: 0,
+        height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+ });
 
  const btnstyle_ = StyleSheet.create({
     style1: {
-        marginTop:5,
         display: 'none'
     },
     style2: {
-        marginTop:5,
         display: 'flex'
     },
 })
@@ -319,4 +353,4 @@ const Iconstyles = StyleSheet.create({
         marginLeft: 50
     }
 });
-export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_};
+export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_, Regionstyle};

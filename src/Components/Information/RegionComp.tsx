@@ -4,6 +4,7 @@ import * as config from '../../Common/config'
 import { responsiveWidth } from "react-native-responsive-dimensions";
 import { Double } from 'react-native/Libraries/Types/CodegenTypes';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import UStyle from '../../Assets/Styles/Styles';
 
 interface Props {
     icon : string,
@@ -26,7 +27,7 @@ class RegionComp extends React.Component<Props> {
         return (
             <View style={{height: 95, width: this.ConWidth, padding: 20, marginBottom:10}} >
                 <TouchableHighlight activeOpacity={0.9} underlayColor={config.BackColor} style={{height: 85, width: this.ConWidth - 10, borderRadius: 10}} onPress={this.props.onPressBTN}>
-                    <View style={{backgroundColor:'white', height: 85, width: this.ConWidth - 10, borderRadius: 10, borderWidth:1, borderColor: config.BackColor, padding: 10, flexDirection:'row'}}>
+                    <View style={UStyle.Regionstyle.Region_View}>
                         <MaterialIcons name={this.props.icon} style={{marginTop: 7, marginLeft:7}} size={18}></MaterialIcons>
                         <View>
                             <Text style={{fontSize: 15, marginLeft: 10, width: this.ConWidth, color: config.BackColor, fontWeight: 'bold'}}>{this.props.Name}</Text>
