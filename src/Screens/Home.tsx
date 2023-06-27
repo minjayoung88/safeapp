@@ -56,6 +56,7 @@ class Home extends React.Component  {
             timeout: 15000,
         })
         .then(location => {
+            console.log(location);
             //console.log(parseFloat(JSON.stringify(location.latitude)));
             this.setState({
                 Curr_lan : parseFloat(JSON.stringify(location.latitude)),

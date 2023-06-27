@@ -106,12 +106,50 @@ const Pickstyle = StyleSheet.create({
     },
  });
 
- const btnstyle_ = StyleSheet.create({
+const btnstyle_ = StyleSheet.create({
     style1: {
         display: 'none'
     },
     style2: {
         display: 'flex'
+    },
+})
+
+const detailStyle = StyleSheet.create({
+    View_:{
+        flexDirection : "row", 
+        width: responsiveWidth(100)-40,
+        borderBottomWidth: 1,
+        borderRightWidth : 1,
+        borderColor: "#d0d0d0"
+    },
+    Title: {
+        marginTop: 5, 
+        fontSize:15, 
+        color:config.BackColor,
+        fontWeight:'bold',
+    },
+    content: {
+        marginTop: 5, 
+        fontSize:15, 
+        marginLeft:5,
+        width: 290,
+    },
+    content2: {
+        marginTop: 5, 
+        fontSize:15, 
+        marginLeft:5,
+        width: 290,
+        height: 50,
+    },
+    Title1: {
+        fontSize:15, 
+        color:"black",
+        fontWeight:'bold',
+    },
+    content1: {
+        fontSize:15, 
+        marginLeft: 10
     },
 })
 
@@ -126,6 +164,15 @@ const SelBox = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#5F4B8B',
         borderRadius :10,
+        justifyContent: 'center',
+        // color:'red'
+    },
+    View_style3: {
+        height : 30,
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#5F4B8B',
+        justifyContent: 'center',
         // color:'red'
     },
     View_style1: {
@@ -353,4 +400,4 @@ const Iconstyles = StyleSheet.create({
         marginLeft: 50
     }
 });
-export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_, Regionstyle};
+export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_, Regionstyle, detailStyle};
