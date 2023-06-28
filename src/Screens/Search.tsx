@@ -1,43 +1,44 @@
+import * as React from 'react';
+import { View } from 'react-native';
+import { responsiveWidth } from "react-native-responsive-dimensions";
+import Styles from "../Assets/Styles/Styles";
+import {Picker} from '@react-native-community/picker';
+import * as config from '../Common/config'
+import Feather from 'react-native-vector-icons/Feather';
 
-import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Animated, Button } from "react-native";
+const Search = () => {
 
-function SlideLeftAndRight() {
-  const animation = useRef(new Animated.Value(0)).current;
-  const [enabled, setEnabled] = useState(false);
-  useEffect(() => {
-    Animated.timing(animation, {
-      toValue: enabled ? 150 : 0,
-      useNativeDriver: true,
-    }).start();
-  }, [animation, enabled]);
+  const [selsi, setSelsi] = React.useState('강원도');
+  const [selsigun, setSelsigun] = React.useState('전체');
+  const [region2, setRegion2] = React.useState(["전체", "강릉시","고성군","삼척시","속초시","양양군","토성군","평창군","홍천군","횡성군","원주시","춘천시"]);
 
+  let serviceItems1 = config.SiList.map((s, i) => {
+    return <Picker.Item key={i} value={s} label={s} />
+  });
+  let serviceItems2 = region2.map((s, i) => {
+      return <Picker.Item key={i} value={s} label={s} />
+  });
   return (
-    <Animated.View  style={{ transform: [{translateY: animation}] , width: 500, backgroundColor:'yellow'}}>
-      <View
-        style={
-          styles.rectangle}
-        onTouchEnd={() => { setEnabled(!enabled) }}></View>
-      
-    </Animated.View>
-  );
-}
-
-function Search() {
-  return (
-    <View style={styles.block}>
-      <SlideLeftAndRight />
+    <View style={{width: responsiveWidth(100)}}>
+        <View style={{flexDirection : "row", marginTop:15, marginLeft: 30}}>
+          <View style={Styles.Pickstyle.Picker_View}>
+            <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={selsi}
+              //onValueChange={(itemValue:string) =>{setSelsi(itemValue);}}
+              >
+              {serviceItems1}
+            </Picker>
+          </View>
+          <View style={Styles.Pickstyle.Picker_View}>
+            <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={selsigun}
+              //onValueChange={(itemValue) =>setSelsigun(itemValue)}
+              >
+              {serviceItems2}
+            </Picker>
+          </View>
+          <Feather name="search" color="black" size={30} style={{marginTop:5}} onPress={() => {}}/>
+        </View>
     </View>
-  )
-}
-
-const styles = StyleSheet.create({
-  block: {},
-  rectangle: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'black',
-  },
-})
+  );
+};
 
 export default Search;

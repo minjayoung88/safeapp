@@ -5,7 +5,6 @@ import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimen
 import GetLocation from 'react-native-get-location';
 import Styles from "../Assets/Styles/Styles";
 import IconButton from '../Components/Common/IconButton'
-import UStyle from '../Assets/Styles/Styles';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout }  from "react-native-maps";
 import Feather from 'react-native-vector-icons/Feather';
 import * as config from '../Common/config'
@@ -14,8 +13,7 @@ import InterestGroup from '../Components/Group/InterestGroup';
 import SlideUpAndDown from '../Components/Group/SlideUpAndDown'
 import { Double } from "react-native/Libraries/Types/CodegenTypes";
 
-  
-class Home extends React.Component  {
+class Home extends React.Component {
     state = {
         Curr_lan : 36.143099,
         Curr_log : 128.392905,
@@ -43,13 +41,15 @@ class Home extends React.Component  {
         Selsi: '강원도',
         Selsigun: '전체',
         Region_1 : new Array(),
+        detail_ : {icon:"", lan:0, log:0, seq:0},
         Region_2 : ["전체", "강릉시","고성군","삼척시","속초시","양양군","토성군","평창군","홍천군","횡성군","원주시","춘천시"],
     }
+    Curr_lan1:Double = 0;
+    Curr_log1:Double = 0;
     //const Region_All:any;
     constructor(props:any){
         super(props);
     }
-    
     geoLocation = () => {
         GetLocation.getCurrentPosition({
             enableHighAccuracy: true,
@@ -58,6 +58,9 @@ class Home extends React.Component  {
         .then(location => {
             console.log(location);
             //console.log(parseFloat(JSON.stringify(location.latitude)));
+            //현재 위치 저장
+            this.Curr_lan1 = parseFloat(JSON.stringify(location.latitude));
+            this.Curr_log1 = parseFloat(JSON.stringify(location.longitude));
             this.setState({
                 Curr_lan : parseFloat(JSON.stringify(location.latitude)),
                 Curr_log : parseFloat(JSON.stringify(location.longitude)),
@@ -75,11 +78,9 @@ class Home extends React.Component  {
         })
     }
 
-    markerClick = (lan:Double, log:Double) => {
+    markerClick = (icon: string, lan:Double, log:Double, seq:number) => {
         //NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId}); 
-        console.log(lan);
-        console.log(log);
-        
+        this.setState({detail_:{icon: icon, lan : lan, log:log, seq:seq}});
     }
 
     async componentDidMount() {
@@ -133,15 +134,18 @@ class Home extends React.Component  {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            //console.log(responseJson);
+            console.log(responseJson);
             this.Save_marker = new Array();
             let hrg_list = Array();
             let sum_lat = 0;
             let sum_lon = 0;
-
+            let sido_ = '';
             responseJson.map((hrg: any, n:number) => {
                 sum_lat = sum_lat + Number(hrg.latitude);
                 sum_lon = sum_lon + Number(hrg.longitude);
+                if(hrg.alladdr != null){
+                    sido_ = n == 0? hrg.alladdr.split(/\s+/g)[0] : sido_;
+                }
                 //console.log(hrg)
                  hrg_list.push({
                     icon : 'hotel',
@@ -157,9 +161,15 @@ class Home extends React.Component  {
             this.Save_marker = hrg_list;
             this.setState({
                 markers: hrg_list,
-            })
+            });
             let count_ = hrg_list.length;
         
+            if(sido_ != ''){
+                this.setState({
+                    Selsi: sido_,
+                });
+                this.selsiReturn(sido_);
+            }
             //console.log("Gubun:" + Gubun);
             //시군구로 검색했을때
             if(Gubun != "1"){
@@ -216,14 +226,17 @@ class Home extends React.Component  {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            //console.log(responseJson);
+            console.log(responseJson);
             let Res_list = Array()
             let sum_lat = 0;
             let sum_lon = 0;
-
+            let sido_ = '';
             responseJson.map((hrg: any, n:number) => {
                 sum_lat = sum_lat + Number(hrg.latitude);
                 sum_lon = sum_lon + Number(hrg.longitude);
+                if(hrg.address != null){
+                    sido_ = n == 0? hrg.address.split(/\s+/g)[0] : sido_;
+                }
                 //console.log(hrg)
                 Res_list.push({
                     icon : 'restaurant',
@@ -236,6 +249,13 @@ class Home extends React.Component  {
                     pinColor : '#8A2BE2',
                  })
             })
+
+            if(sido_ != '' && Gubun3=="1"){
+                this.setState({
+                    Selsi: sido_,
+                });
+                this.selsiReturn(sido_);
+            }
             const before_marker = this.Save_marker;
             this.Save_marker = Gubun3 == "2"? this.Save_marker.concat(Res_list) : Res_list;
             this.setState({
@@ -326,17 +346,17 @@ class Home extends React.Component  {
                 </View>
                 <Text style={{fontSize:20, color:'white', marginTop:10, marginLeft:40}}>복지시설과 할인음식점을 검색해보세요.</Text>
                 <View style={{flexDirection : "row", marginTop:15, marginLeft: 15}}>
-                    <InterestGroup SelList={[]} Editable={true} returnEVT={this.SelGReturn} ViewStyle={UStyle.SelBox.View_style} selBoxList={config.InterestList}></InterestGroup>
+                    <InterestGroup SelList={[]} Editable={true} returnEVT={this.SelGReturn} ViewStyle={Styles.SelBox.View_style} selBoxList={config.InterestList}></InterestGroup>
                 </View>
                 <View style={{flexDirection : "row", marginTop:15, marginLeft: 30}}>
-                    <View style={UStyle.Pickstyle.Picker_View}>
-                        <Picker enabled={true} style={[UStyle.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsi}
+                    <View style={Styles.Pickstyle.Picker_View}>
+                        <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsi}
                         onValueChange={(itemValue) =>this.selsiReturn(itemValue)}>
                             {serviceItems1}
                         </Picker>
                     </View>
-                    <View style={UStyle.Pickstyle.Picker_View}>
-                        <Picker enabled={true} style={[UStyle.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsigun}
+                    <View style={Styles.Pickstyle.Picker_View}>
+                        <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsigun}
                         onValueChange={(itemValue) =>this.selsigunReturn(itemValue)}>
                              {serviceItems2}
                         </Picker>
@@ -390,7 +410,7 @@ class Home extends React.Component  {
                                     })
                                 }}
                             >
-                                <Callout style={{zIndex:-1}} onPress={() => this.markerClick(Number(marker.latitude), Number(marker.longitude))}>
+                                <Callout style={{zIndex:-1}} onPress={() => this.markerClick(marker.icon, Number(marker.latitude), Number(marker.longitude), marker.key)}>
                                     {/* <MapInfo ChId={Number(marker.key)} ChAddress={marker.Adress} ChCallNo={marker.CallNo} ChTitle={marker.Title}/> */}
                                     <Text style={{height:45, textAlignVertical:'center'}}>{marker.Title}</Text>
                                 </Callout>
@@ -412,16 +432,16 @@ class Home extends React.Component  {
                         }else{this.onGetBokji("1", "2", "1");}
                     }
                     }
-                } BTNstyle= {UStyle.BTNStyle.Mapbutton} Textstyle= {UStyle.BTNStyle.text}></IconButton>
+                } BTNstyle= {Styles.BTNStyle.Mapbutton} Textstyle= {Styles.BTNStyle.text}></IconButton>
             </View>
             }
-           <SlideUpAndDown RegionArray={this.Save_marker}/>
+           <SlideUpAndDown RegionArray={this.Save_marker} DetailData={this.state.detail_} Curr_lan={this.Curr_lan1} Curr_log={this.Curr_log1}/>
 
         </View>
          
         } 
         else{
-            return  <View style={{height: this.ConHeight, backgroundColor:'white'}}>
+            return  <View style={{height: this.ConHeight + 70, backgroundColor:'white'}}>
                         <Text style={Styles.CenterTxtStyle.Text}>{'현재 위치를 검색중입니다....'}</Text>
                     </View>
         }

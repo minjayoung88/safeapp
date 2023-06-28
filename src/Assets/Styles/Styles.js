@@ -123,17 +123,27 @@ const detailStyle = StyleSheet.create({
         borderRightWidth : 1,
         borderColor: "#d0d0d0"
     },
+    View_1:{
+        flexDirection : "row", 
+        width: responsiveWidth(100)-40,
+        borderBottomWidth: 1,
+        
+        borderColor: "#d0d0d0",
+        height: 35,
+    },
     Title: {
         marginTop: 5, 
         fontSize:15, 
         color:config.BackColor,
         fontWeight:'bold',
+        textAlignVertical: 'center'
     },
     content: {
         marginTop: 5, 
         fontSize:15, 
         marginLeft:5,
         width: 290,
+        textAlignVertical: 'center'
     },
     content2: {
         marginTop: 5, 
@@ -141,15 +151,27 @@ const detailStyle = StyleSheet.create({
         marginLeft:5,
         width: 290,
         height: 50,
+        textAlignVertical: 'center'
+    },
+    Callcontent: {
+        marginTop: 5, 
+        fontSize:15, 
+        marginLeft:5,
+        width: 290,
+        color: 'blue',
+        textDecorationLine:'underline',
+        textAlignVertical: 'center'
     },
     Title1: {
         fontSize:15, 
         color:"black",
         fontWeight:'bold',
+        textAlignVertical: 'center'
     },
     content1: {
         fontSize:15, 
-        marginLeft: 10
+        marginLeft: 10,
+        textAlignVertical: 'center'
     },
 })
 
@@ -400,4 +422,22 @@ const Iconstyles = StyleSheet.create({
         marginLeft: 50
     }
 });
-export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_, Regionstyle, detailStyle};
+
+const RBTNstyles = StyleSheet.create({
+    RadioView:{
+        flexDirection: 'row',
+        width: responsiveWidth(100) - 40,
+        borderBottomWidth : 1,
+        borderBottomColor : '#d0d0d0',
+        textAlignVertical: 'center',
+        height: 50,
+    },
+    RadioView1:{
+        marginTop: 7
+    },
+    RadioText:{
+        marginTop: 12,
+        fontSize : 16
+    },
+});
+export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_, Regionstyle, detailStyle, RBTNstyles};
