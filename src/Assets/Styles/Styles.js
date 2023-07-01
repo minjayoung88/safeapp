@@ -106,6 +106,37 @@ const Pickstyle = StyleSheet.create({
     },
  });
 
+ const Alarmstyle = StyleSheet.create({
+    Alarm_View: {
+        backgroundColor:'white', 
+        height: 'auto', 
+        width: responsiveWidth(100) - 40, 
+        borderRadius: 10, 
+        borderWidth:2, 
+        borderColor: 'white', 
+        padding: 7, 
+        flexDirection:'row',
+        shadowColor: "#000",
+        shadowOffset: {
+        width: 0,
+        height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    Alarm_Title: {
+        width: 60,
+        color: 'black'
+    },
+    Alarm_Contents: {
+        fontSize: 12, 
+        marginLeft: 10, 
+        width: responsiveWidth(100) - 160, 
+        marginTop: 2
+    }
+ });
+
 const btnstyle_ = StyleSheet.create({
     style1: {
         display: 'none'
@@ -232,7 +263,7 @@ const BTNStyle = StyleSheet.create({
         borderRadius:3,
         marginRight:3,
         marginLeft:3,
-        height: 35,
+        height: 45,
         justifyContent: "center",
         alignItems: "center",
         borderColor: "#D5D5D5",
@@ -440,4 +471,4 @@ const RBTNstyles = StyleSheet.create({
         fontSize : 16
     },
 });
-export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_, Regionstyle, detailStyle, RBTNstyles};
+export default {Regstyles, SelBox, BTNStyle, CenterTxtStyle, RegisterBox, SwiperStyle, Iconstyles, Pickstyle, btnstyle_, Regionstyle, detailStyle, RBTNstyles, Alarmstyle};

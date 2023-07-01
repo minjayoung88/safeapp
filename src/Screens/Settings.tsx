@@ -6,8 +6,15 @@ import Styles from "../Assets/Styles/Styles";
 import AsyncStorage from '@react-native-community/async-storage';
 
 const Settings = () => {
-  const [value, setValue] = React.useState('first');
-
+  let StoreMap:string = 'kakao';
+  
+  AsyncStorage.getItem('map').then((value1)=> {
+    if(value1 != null)
+      StoreMap = value1;
+  })
+ 
+  const [value, setValue] = React.useState(StoreMap);
+  
   const valueChange = (newValue:string) => {
     setValue(newValue);
     //storage 저장
