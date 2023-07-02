@@ -9,10 +9,12 @@
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
-      android:theme="@style/AppTheme">
+      android:theme="@style/AppTheme"
+      android:usesCleartextTraffic="true"
+      android:networkSecurityConfig="@xml/network_security_config">
       <meta-data 
       android:name="com.google.android.geo.API_KEY" 
-      android:value="AIzaSyAZ4m3PkJUJg3Vm3qkd99CRI462qVtAg2c"
+      android:value="AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs"
     />
     <uses-library android:name="org.apache.http.legacy" android:required="false"/> 
       <activity
@@ -23,15 +25,17 @@
         android:windowSoftInputMode="adjustResize"
         android:exported="true">
         <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
+          <action android:name="android.intent.action.MAIN" />
+          <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        <intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="nmap" />
             <data android:scheme="tmap" />
             <data android:scheme="kakaomap" />
-        </intent-filter>
+         </intent-filter>
       </activity>
     </application>
 </manifest>

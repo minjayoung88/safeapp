@@ -14,7 +14,7 @@ class loading extends React.Component  {
                             style={{width: 100, height:100}}
                         />
                         <View style={{flexDirection:'row', alignItems:'center', marginTop: 15}}>
-                            <Text style={{color: config.BackColor, fontSize: 14, fontWeight:'bold'}}>{'K-문화재'}</Text>
+                            <Text style={{color: config.BackColor, fontSize: 14, fontWeight:'bold'}}>{'안전한 여행 도우미'}</Text>
                             <Text style={{color:'grey', fontSize: 9, marginLeft: 5, marginTop:4}}>{'with Friend'}</Text>
                         </View>
                     </View>

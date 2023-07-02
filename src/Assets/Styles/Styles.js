@@ -62,12 +62,14 @@ const Pickstyle = StyleSheet.create({
         height:40,
         width: 140,
         backgroundColor: 'white',
-        marginRight: 15
+        marginRight: 15,
+        color: 'black'
     },
     Picker_style: {
         fontSize : 15,
         height:40,
         width: 140,
+        color: 'black'
     },
  });
 
@@ -97,12 +99,14 @@ const Pickstyle = StyleSheet.create({
         flexDirection : "column",
         shadowColor: "#000",
         shadowOffset: {
-        width: 0,
+        width: responsiveWidth(100),
         height: 2,
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        justifyContent: "center",
+        alignItems: "center",
     },
  });
 
@@ -133,7 +137,8 @@ const Pickstyle = StyleSheet.create({
         fontSize: 12, 
         marginLeft: 10, 
         width: responsiveWidth(100) - 160, 
-        marginTop: 2
+        marginTop: 2,
+        color: '#727272'
     }
  });
 
@@ -174,6 +179,7 @@ const detailStyle = StyleSheet.create({
         fontSize:15, 
         marginLeft:5,
         width: 290,
+        color: 'black',
         textAlignVertical: 'center'
     },
     content2: {
@@ -182,6 +188,7 @@ const detailStyle = StyleSheet.create({
         marginLeft:5,
         width: 290,
         height: 50,
+        color: 'black',
         textAlignVertical: 'center'
     },
     Callcontent: {
@@ -202,14 +209,14 @@ const detailStyle = StyleSheet.create({
     content1: {
         fontSize:15, 
         marginLeft: 10,
-        textAlignVertical: 'center'
+        textAlignVertical: 'center',
+        color:"darkgrey",
     },
 })
-
 const SelBox = StyleSheet.create({
     View_style: {
         height : 30,
-        marginLeft: 8,
+        marginRight: 8,
         // marginLeft : 'auto',
         // marginRight : 'auto',
         // marginBottom : 5,
@@ -217,7 +224,8 @@ const SelBox = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#5F4B8B',
         borderRadius :10,
-        justifyContent: 'center',
+        //justifyContent: 'center',
+        //justifyContent: 'flex-start',
         // color:'red'
     },
     View_style3: {
@@ -226,7 +234,7 @@ const SelBox = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#5F4B8B',
         justifyContent: 'center',
-        // color:'red'
+        color:'black'
     },
     View_style1: {
         height : 50,

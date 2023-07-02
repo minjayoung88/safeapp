@@ -31,8 +31,8 @@ class RegionComp extends React.Component<Props> {
                         <MaterialIcons name={this.props.icon} style={{marginTop: 7, marginLeft:7}} size={18}></MaterialIcons>
                         <View>
                             <Text style={{fontSize: 15, marginLeft: 10, width: this.ConWidth, color: config.BackColor, fontWeight: 'bold'}}>{this.props.Name}</Text>
-                            <Text style={{fontSize: 12, marginLeft: 10, width: this.ConWidth, marginTop: 5}}>{this.props.Adress}</Text>
-                            <Text style={{fontSize: 12, marginLeft: 10, width: this.ConWidth, marginTop: 5}}>{this.props.CallNo}</Text>
+                            <Text style={{fontSize: 12, marginLeft: 10, width: this.ConWidth, marginTop: 5, color: 'black'}}>{this.props.Adress}</Text>
+                            <Text style={{fontSize: 12, marginLeft: 10, width: this.ConWidth, marginTop: 5, color: 'black'}}>{this.props.CallNo}</Text>
                         </View>
                     </View>
                 </TouchableHighlight>

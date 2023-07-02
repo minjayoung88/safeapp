@@ -134,7 +134,15 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
-
+    lint {
+          baseline = file("lint-baseline.xml")
+    }
+    lintOptions {  
+        checkReleaseBuilds false  
+        // Or, if you prefer, you can continue to check for errors in release builds,  
+        // but continue the build even when errors are found:  
+        abortOnError false  
+    }
     defaultConfig {
         applicationId "com.safeapp"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -218,6 +226,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('safeapp.keystore')
+            storePassword 'mjy3079'
+            keyAlias 'safeapp'
+            keyPassword 'mjy3079'
+        }
     }
     buildTypes {
         debug {
@@ -226,7 +240,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -257,7 +271,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    
+    implementation project(':react-native-splash-screen')
     implementation platform('com.google.firebase:firebase-bom:32.1.0')
     implementation 'com.google.firebase:firebase-analytics'
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {

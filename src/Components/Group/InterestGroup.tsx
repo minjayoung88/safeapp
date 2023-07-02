@@ -6,8 +6,6 @@ import * as config from '../../Common/config'
 const styles = StyleSheet.create({
     SelView: {
       flexDirection: 'row',
-      marginLeft : 10,
-      marginRight : 10,
     }
 });
 
@@ -80,11 +78,11 @@ const InterestGroup = ({selBoxList, ViewStyle, returnEVT, Editable, SelList}: Pr
     for (let i:number = 0; i <selBoxList.length; i= i+2) {
         
         boxList.push(
-            <View style={styles.SelView} key={i.toString() + 'View'}>
-                <SelBox ViewStyle={ViewStyle} key={i.toString()} StyleList={[bgStyle.bg[i], bgStyle.TColor[i]]}  TXTholder={selBoxList[i]} TXTkey ={i.toString()} 
+            <View style={styles.SelView} key={i.toString() + '_inView'}>
+                <SelBox ViewStyle={ViewStyle} key={'sel' + i.toString()} StyleList={[bgStyle.bg[i], bgStyle.TColor[i]]}  TXTholder={selBoxList[i]} TXTkey ={i.toString()} 
                     BoxWidth = {83} iconName='hotel'
                     TouchEvt={() => {CHGEvent(i)}}/>
-                <SelBox ViewStyle={ViewStyle} key={(i+1).toString()} StyleList={[bgStyle.bg[(i+1)], bgStyle.TColor[(i+1)]]}  TXTholder={selBoxList[(i+1)]} TXTkey ={(i+1).toString()} 
+                <SelBox ViewStyle={ViewStyle} key={'sel1' + (i).toString()} StyleList={[bgStyle.bg[(i+1)], bgStyle.TColor[(i+1)]]}  TXTholder={selBoxList[(i+1)]} TXTkey ={(i+1).toString()} 
                     BoxWidth = {95} iconName='restaurant'
                     TouchEvt={() => {CHGEvent(i+1)}}/>
             </View>

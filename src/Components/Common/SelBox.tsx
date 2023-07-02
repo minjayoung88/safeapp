@@ -17,7 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const SelBox = ({TXTholder, TXTkey, TouchEvt, StyleList, BoxWidth, ViewStyle, iconName}: Props) => {
     return (
         <View style={[ViewStyle, {width:BoxWidth,backgroundColor: StyleList[0], flexDirection : "row"}]} onTouchStart={TouchEvt} key={TXTkey}>
-            <MaterialIcons name={iconName} style={{marginTop: 7, marginLeft:7}}></MaterialIcons>
+            <MaterialIcons name={iconName} style={{marginTop: 7, marginLeft:7, color:StyleList[1]}}></MaterialIcons>
             <Text style={[UStyle.SelBox.View_Text, {color: StyleList[1], fontFamily: config.TFont}]}>{TXTholder}</Text>
         </View>
 

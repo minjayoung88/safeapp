@@ -39,7 +39,8 @@ class Search extends React.Component {
     this.setState({Selsigun: val});
   }
   // 최신 100개 데이터 저장
-  CurrSearch = () => {
+  CurrSearch = (Gubun:Int32) => {
+    this.CurrPageNO = 1;
     let reqUrl = 'https://apis.data.go.kr/1741000/DisasterMsg3/getDisasterMsg1List?serviceKey=Le8c15KiRz0G8xk1HjeZn4lJ9AxvBpJJYpXjtuDSrTlXtYb7DYsZPndhvZAr%2BSgk%2BJfxGZyqPsfCCM%2FMM2qkTg%3D%3D&pageNo=1&numOfRows=100&type=json'
     fetch(reqUrl , {
           method: 'GET'
@@ -67,7 +68,7 @@ class Search extends React.Component {
         });
       });
       this.setState({alramMSG: alramMSG_});
-      this.SearchDetail(1);
+      this.SearchDetail(Gubun);
     });
   }
 
@@ -89,23 +90,23 @@ class Search extends React.Component {
     }
     arrayTmp.map((n:any,i:any) =>{
       Comp_.push(
-        <View>
-          <AlarmComp create_date={n.create_date} location_name={n.location_name} msg={n.msg} key={i}/>
+        <View key={"alarm_" + i}>
+          <AlarmComp create_date={n.create_date} location_name={n.location_name} msg={n.msg} key={"comp_" + i}/>
         </View>
       )
     });
     
-    if(Gubun != 2){
-      this.setState({alramMSGComp: [...this.state.alramMSGComp,...Comp_]});
-      }else {
+    //if(Gubun != 2){
+    //  this.setState({alramMSGComp: [...this.state.alramMSGComp,...Comp_]});
+    //  }else {
       this.setState({alramMSGComp: Comp_});
-    }
+    //}
   }
 
   async componentDidMount() {
     //console.log("aaaa");
     //this.SearchDetail(1);
-    this.CurrSearch();
+    this.CurrSearch(1);
   }
 
   moreAlarm = () => {
@@ -138,7 +139,7 @@ render() {
                 {serviceItems2}
               </Picker>
             </View>
-            <Feather name="search" color="black" size={30} style={{marginTop:5}} onPress={() => {this.SearchDetail(2);}}/>
+            <Feather name="search" color="black" size={30} style={{marginTop:5}} onPress={() => {this.CurrSearch(2);}}/>
           </View>
           <ScrollView style={{height: responsiveHeight(100) - 200}}>
             {this.state.alramMSGComp}

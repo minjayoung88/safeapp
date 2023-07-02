@@ -128,13 +128,14 @@ class Home extends React.Component {
     Save_marker:any = new Array();
     onGetBokji = (Gubun:string, Gubun2:string, Gubun3:string) => {
         let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/bokjihouseLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/bokjihouse_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
-        //console.log(reqUrl);
+        //Alert.alert(reqUrl);
+        
         fetch(reqUrl , {
               method: 'GET'
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson);
+            //Alert.alert("들어옴");
             this.Save_marker = new Array();
             let hrg_list = Array();
             let sum_lat = 0;
@@ -213,7 +214,7 @@ class Home extends React.Component {
             }
         })
         .catch((error) => {
-            console.error(error);
+           Alert.alert(error.message);
         });
     };
 
@@ -341,22 +342,22 @@ class Home extends React.Component {
             return  <View style={ {width: this.state.ConWidth, height: this.ConHeight, backgroundColor:'white', flex:1}}>
             <View style={Styles.Regionstyle.Home_View}>
                 <View style={{flexDirection : "row"}}>
-                    <Image style={{height: 40, width: 40, marginTop:18, marginLeft:80}}  source={require('../Assets/Images/shield.png')} />
-                    <Text style={{fontSize:23, color:'black', marginTop:23, marginLeft:10}}>안전한 여행도우미</Text>
+                    <Image style={{height: 40, width: 40}}  source={require('../Assets/Images/shield.png')} />
+                    <Text style={{fontSize:23, color:'black', marginTop: 5, marginLeft: 5}}>안전한 여행도우미</Text>
                 </View>
-                <Text style={{fontSize:20, color:'white', marginTop:10, marginLeft:40}}>복지시설과 할인음식점을 검색해보세요.</Text>
-                <View style={{flexDirection : "row", marginTop:15, marginLeft: 15}}>
+                <Text style={{fontSize:20, color:'white', marginTop:10}}>복지시설과 할인음식점을 검색해보세요.</Text>
+                <View style={{flexDirection : "row", marginTop:15, width: 340}}>
                     <InterestGroup SelList={[]} Editable={true} returnEVT={this.SelGReturn} ViewStyle={Styles.SelBox.View_style} selBoxList={config.InterestList}></InterestGroup>
                 </View>
-                <View style={{flexDirection : "row", marginTop:15, marginLeft: 30}}>
+                <View style={{flexDirection : "row", marginTop:15}}>
                     <View style={Styles.Pickstyle.Picker_View}>
-                        <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsi}
+                        <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsi} mode="dialog" 
                         onValueChange={(itemValue) =>this.selsiReturn(itemValue)}>
                             {serviceItems1}
                         </Picker>
                     </View>
                     <View style={Styles.Pickstyle.Picker_View}>
-                        <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsigun}
+                        <Picker enabled={true} style={[Styles.Pickstyle.Picker_style, {fontFamily: config.TFont}]} selectedValue={this.state.Selsigun} mode="dialog" 
                         onValueChange={(itemValue) =>this.selsigunReturn(itemValue)}>
                              {serviceItems2}
                         </Picker>
@@ -398,6 +399,7 @@ class Home extends React.Component {
                                     latitude: Number(marker.latitude),
                                     longitude: Number(marker.longitude),
                                 }}
+                                
                                 key= {Number(marker.key)}
                                 pinColor={marker.pinColor}
                                 zIndex={-1}
@@ -412,7 +414,7 @@ class Home extends React.Component {
                             >
                                 <Callout style={{zIndex:-1}} onPress={() => this.markerClick(marker.icon, Number(marker.latitude), Number(marker.longitude), marker.key)}>
                                     {/* <MapInfo ChId={Number(marker.key)} ChAddress={marker.Adress} ChCallNo={marker.CallNo} ChTitle={marker.Title}/> */}
-                                    <Text style={{height:45, textAlignVertical:'center'}}>{marker.Title}</Text>
+                                    <Text style={{height:45, textAlignVertical:'center', color:'black'}}>{marker.Title}</Text>
                                 </Callout>
                             </Marker>
                         ))}
