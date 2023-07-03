@@ -52,7 +52,7 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
     useEffect(() => {
       //const enabled_ =  DetailData.icon != ""? true: false;
       Animated.timing(animation, {
-        toValue: enabled ? 430 : 90,
+        toValue: enabled ? 530 : 90,
         useNativeDriver: true,
       }).start();
     }, [animation, enabled]);
@@ -159,92 +159,100 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
 
     if(DetailData.icon != ""){
       //상세화면 불러오기
-      let reqUrl = DetailData.icon == "hotel"? 'http://jjsung.o-r.kr/defense/bokjihouse_detail?latitude=' + DetailData.lan + '&longitude=' + DetailData.log : 'http://jjsung.o-r.kr/defense/restaurant_detail?seq=' + DetailData.seq
-      //console.log(reqUrl);
-      fetch(reqUrl , {
-            method: 'GET'
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        //console.log(responseJson);
-        //setDetail1([]); //초기화
-        detailList1 = [];
-        responseJson.map((data: any, n:number) => {
-          if(n == 0){
+      if(DetailData.icon == 'hotel' || DetailData.icon == 'restaurant'){
+
+        let reqUrl = DetailData.icon == "hotel"? 'http://jjsung.o-r.kr/defense/bokjihouse_detail?latitude=' + DetailData.lan + '&longitude=' + DetailData.log : 'http://jjsung.o-r.kr/defense/restaurant_detail?seq=' + DetailData.seq
+        //console.log(reqUrl);
+        fetch(reqUrl , {
+              method: 'GET'
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          //console.log(responseJson);
+          //setDetail1([]); //초기화
+          detailList1 = [];
+          responseJson.map((data: any, n:number) => {
+            if(n == 0){
+              if(DetailData.icon == 'hotel'){
+                detailList1.push(
+                  <View style={{marginTop:-37, marginLeft: 20}} key = {'View_' + n}>
+                    <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10}}>{data.name}</Text>
+                    <View style={[UStyle.detailStyle.View_, {borderTopWidth:1}]}>
+                      <TitleBox TXTholder="주소" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={50}></TitleBox>
+                      <Text style={UStyle.detailStyle.Callcontent} onPress={() => {ConnNavi(data.name, data.latitude, data.longitude )}}>{data.alladdr}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                      <TitleBox TXTholder="전화번호" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
+                      <Text style={UStyle.detailStyle.Callcontent} onPress ={() => Linking.openURL(`tel:${data.callnum}`)}>{data.callnum}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                    <TitleBox TXTholder="체크인" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
+                      <Text style={UStyle.detailStyle.content}>{data.checkin}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                    <TitleBox TXTholder="체크아웃" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
+                      <Text style={UStyle.detailStyle.content}>{data.checkout}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                    <TitleBox TXTholder="취사여부" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
+                      <Text style={UStyle.detailStyle.content}>{data.cookavail}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                    <TitleBox TXTholder="안내사항" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={80}></TitleBox>
+                      <Text style={UStyle.detailStyle.content}>{data.notice}</Text>
+                    </View>
+                  </View>
+                )
+              }else{
+                detailList1.push(
+                  <View style={{marginTop:-37, marginLeft: 20}} key = {'View1_' + n}>
+                    <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10}}>{data.store_name}</Text>
+                    <View style={[UStyle.detailStyle.View_, {borderTopWidth:1}]}>
+                      <TitleBox TXTholder="주소" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={50}></TitleBox>
+                      <Text style={UStyle.detailStyle.Callcontent} onPress={() => {ConnNavi(data.store_name, data.latitude, data.longitude )}}>{data.address}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                      <TitleBox TXTholder="전화번호" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70}  height={50}></TitleBox>
+                      <Text style={UStyle.detailStyle.Callcontent} onPress ={() => Linking.openURL(`tel:${data.callnum}`)}>{data.callnum}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                    <TitleBox TXTholder="할인내용" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={57}></TitleBox>
+                      <Text style={UStyle.detailStyle.content}>{data.benefit}</Text>
+                    </View>
+                  </View>
+                )}
+            }
             if(DetailData.icon == 'hotel'){
               detailList1.push(
-                <View style={{marginTop:-37, marginLeft: 20}} key = {'View_' + n}>
-                  <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10}}>{data.name}</Text>
-                  <View style={[UStyle.detailStyle.View_, {borderTopWidth:1}]}>
-                    <TitleBox TXTholder="주소" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={50}></TitleBox>
-                    <Text style={UStyle.detailStyle.Callcontent} onPress={() => {ConnNavi(data.name, data.latitude, data.longitude )}}>{data.alladdr}</Text>
+                <View style={{ marginLeft: 20, marginTop:10}} key = {'hotel_' + n}>
+                    <Text style={{color:"black", fontWeight:"bold"}}>{n+1}. {data.area}</Text>
+                    <View style={UStyle.detailStyle.View_}>
+                      <Text style={UStyle.detailStyle.Title1}>비수기</Text>
+                      <Text style={UStyle.detailStyle.content1}>{data.offseason}</Text>
+                      <Text> / </Text>
+                      <Text style={UStyle.detailStyle.Title1}>성수기</Text>
+                      <Text style={UStyle.detailStyle.content1}>{data.peakseason}</Text>
+                      <Text> / </Text>
+                      <Text style={UStyle.detailStyle.Title1}>휴일</Text>
+                      <Text style={UStyle.detailStyle.content1}>{data.holiday}</Text>
+                    </View>
+                    <View style={UStyle.detailStyle.View_}>
+                      <Text style={UStyle.detailStyle.Title1}>수용인원</Text>
+                      <Text style={UStyle.detailStyle.content1}>{data.people}</Text>
+                    </View>
                   </View>
-                  <View style={UStyle.detailStyle.View_}>
-                    <TitleBox TXTholder="전화번호" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
-                    <Text style={UStyle.detailStyle.Callcontent} onPress ={() => Linking.openURL(`tel:${data.callnum}`)}>{data.callnum}</Text>
-                  </View>
-                  <View style={UStyle.detailStyle.View_}>
-                  <TitleBox TXTholder="체크인" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
-                    <Text style={UStyle.detailStyle.content}>{data.checkin}</Text>
-                  </View>
-                  <View style={UStyle.detailStyle.View_}>
-                  <TitleBox TXTholder="체크아웃" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
-                    <Text style={UStyle.detailStyle.content}>{data.checkout}</Text>
-                  </View>
-                  <View style={UStyle.detailStyle.View_}>
-                  <TitleBox TXTholder="취사여부" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
-                    <Text style={UStyle.detailStyle.content}>{data.cookavail}</Text>
-                  </View>
-                  <View style={UStyle.detailStyle.View_}>
-                  <TitleBox TXTholder="안내사항" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={80}></TitleBox>
-                    <Text style={UStyle.detailStyle.content}>{data.notice}</Text>
-                  </View>
-                </View>
               )
-            }else{
-              detailList1.push(
-                <View style={{marginTop:-37, marginLeft: 20}} key = {'View1_' + n}>
-                  <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10}}>{data.store_name}</Text>
-                  <View style={[UStyle.detailStyle.View_, {borderTopWidth:1}]}>
-                    <TitleBox TXTholder="주소" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={50}></TitleBox>
-                    <Text style={UStyle.detailStyle.Callcontent} onPress={() => {ConnNavi(data.store_name, data.latitude, data.longitude )}}>{data.address}</Text>
-                  </View>
-                  <View style={UStyle.detailStyle.View_}>
-                    <TitleBox TXTholder="전화번호" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70}  height={50}></TitleBox>
-                    <Text style={UStyle.detailStyle.Callcontent} onPress ={() => Linking.openURL(`tel:${data.callnum}`)}>{data.callnum}</Text>
-                  </View>
-                  <View style={UStyle.detailStyle.View_}>
-                  <TitleBox TXTholder="할인내용" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={57}></TitleBox>
-                    <Text style={UStyle.detailStyle.content}>{data.benefit}</Text>
-                  </View>
-                </View>
-              )}
-          }
-          if(DetailData.icon == 'hotel'){
-            detailList1.push(
-              <View style={{ marginLeft: 20, marginTop:10}} key = {'hotel_' + n}>
-                  <Text style={{color:"black", fontWeight:"bold"}}>{n+1}. {data.area}</Text>
-                  <View style={UStyle.detailStyle.View_}>
-                    <Text style={UStyle.detailStyle.Title1}>비수기</Text>
-                    <Text style={UStyle.detailStyle.content1}>{data.offseason}</Text>
-                    <Text> / </Text>
-                    <Text style={UStyle.detailStyle.Title1}>성수기</Text>
-                    <Text style={UStyle.detailStyle.content1}>{data.peakseason}</Text>
-                    <Text> / </Text>
-                    <Text style={UStyle.detailStyle.Title1}>휴일</Text>
-                    <Text style={UStyle.detailStyle.content1}>{data.holiday}</Text>
-                  </View>
-                  <View style={UStyle.detailStyle.View_}>
-                    <Text style={UStyle.detailStyle.Title1}>수용인원</Text>
-                    <Text style={UStyle.detailStyle.content1}>{data.people}</Text>
-                  </View>
-                </View>
-            )
-          }
-        })
+            }
+          })
 
-        setDetail1(detailList1);
-      })
+          
+        })
+      //안전정보
+      } else{
+        
+      }
+
+      setDetail1(detailList1);
     }
     return (
         <Animated.View style={{transform: [{translateY: animation}], position: 'absolute', bottom:70 , left: 0, width: responsiveWidth(100), height: responsiveHeight(100) - 305, backgroundColor:'white', borderRadius: 30, borderWidth:0.5, borderColor:'#d0d0d0' }}>

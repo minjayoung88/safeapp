@@ -144,7 +144,7 @@ android {
         abortOnError false  
     }
     defaultConfig {
-        applicationId "com.safeapp"
+        applicationId "com.safebokapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

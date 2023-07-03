@@ -1,4 +1,4 @@
-package com.safeapp.newarchitecture.modules;
+package com.safebokapp.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

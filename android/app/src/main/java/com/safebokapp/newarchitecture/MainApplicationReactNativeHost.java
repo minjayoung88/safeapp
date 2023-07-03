@@ -1,4 +1,4 @@
-package com.safeapp.newarchitecture;
+package com.safebokapp.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.safeapp.BuildConfig;
-import com.safeapp.newarchitecture.components.MainComponentsRegistry;
-import com.safeapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.safebokapp.BuildConfig;
+import com.safebokapp.newarchitecture.components.MainComponentsRegistry;
+import com.safebokapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

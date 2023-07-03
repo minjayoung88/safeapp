@@ -5,12 +5,13 @@ import { responsiveHeight, responsiveWidth } from "react-native-responsive-dimen
 import GetLocation from 'react-native-get-location';
 import Styles from "../Assets/Styles/Styles";
 import IconButton from '../Components/Common/IconButton'
-import MapView, { PROVIDER_GOOGLE, Marker, Callout }  from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Callout} from "react-native-maps";
 import Feather from 'react-native-vector-icons/Feather';
 import * as config from '../Common/config'
 import {Picker} from '@react-native-community/picker';
 import InterestGroup from '../Components/Group/InterestGroup';
 import SlideUpAndDown from '../Components/Group/SlideUpAndDown'
+import SafeInfo from '../Components/Information/SafeInfo'
 import { Double } from "react-native/Libraries/Types/CodegenTypes";
 
 class Home extends React.Component {
@@ -31,6 +32,7 @@ class Home extends React.Component {
             Title: '',
             pinColor : 'yellow',
             onEvent : () => {},
+            carData: {pop1:0, pop2:0},
         }],
         Ready_Lo : false,
         ConWidth : responsiveWidth(100),
@@ -79,8 +81,10 @@ class Home extends React.Component {
     }
 
     markerClick = (icon: string, lan:Double, log:Double, seq:number) => {
-        //NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId}); 
-        this.setState({detail_:{icon: icon, lan : lan, log:log, seq:seq}});
+        //NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId});
+        if(icon == 'hotel' || icon == 'restaurant'){
+            this.setState({detail_:{icon: icon, lan : lan, log:log, seq:seq}});
+        }
     }
 
     async componentDidMount() {
@@ -150,7 +154,7 @@ class Home extends React.Component {
                 //console.log(hrg)
                  hrg_list.push({
                     icon : 'hotel',
-                    key: Number(hrg.seq),
+                    key: Number(hrg.seq) + 2000,
                     latitude: Number(hrg.latitude),
                     longitude: Number(hrg.longitude),
                     CallNo: hrg.callnum,
@@ -241,7 +245,7 @@ class Home extends React.Component {
                 //console.log(hrg)
                 Res_list.push({
                     icon : 'restaurant',
-                    key: Number(hrg.seq),
+                    key: Number(hrg.seq) + 1000,
                     latitude: Number(hrg.latitude),
                     longitude: Number(hrg.longitude),
                     CallNo: hrg.callnum,
@@ -308,6 +312,9 @@ class Home extends React.Component {
         //headerLeft: () => <SideIcon/>,
     };
     Region_All:any = JSON.parse(JSON.stringify(require('../Assets/Data/region.json')));
+    sidoJSON:any = JSON.parse(JSON.stringify(require('../Assets/Data/sido.json')));
+    sigunguJSON:any = JSON.parse(JSON.stringify(require('../Assets/Data/sigungu.json')));
+    carAcc:any = JSON.parse(JSON.stringify(require('../Assets/Data/carAccident.json')));
     //this.state.Region_All = JSON.parse(JSON.stringify(MenuList_));
     selNumList:string = '';
     selsiReturn = (val: any) => {
@@ -329,6 +336,51 @@ class Home extends React.Component {
         })
     };
   
+    SearchCar = () => {
+        //geocoding써야해
+        fetch('https://maps.googleapis.com/maps/api/geocode/json?language=ko&address=' + this.state.Curr_lan  + ',' + this.state.Curr_log + '&key=AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                const alladdr_ = responseJson.results[0].formatted_address;
+                const sido_ = alladdr_.split(/\s+/g)[1];
+                const sigungu_ = alladdr_.split(/\s+/g)[2];
+                const sidoCode = this.sidoJSON.data[sido_];
+                const sigunguCode = this.sigunguJSON.data[sidoCode][sigungu_];
+
+                var url = 'http://apis.data.go.kr/B552061/AccidentDeath/getRestTrafficAccidentDeath?searchYear=2021&type=json&serviceKey=Le8c15KiRz0G8xk1HjeZn4lJ9AxvBpJJYpXjtuDSrTlXtYb7DYsZPndhvZAr%2BSgk%2BJfxGZyqPsfCCM%2FMM2qkTg%3D%3D'+ '&siDo='+sidoCode+'&guGun='+sigunguCode+'&numOfRows=100&pageNo=1';
+                console.log(url);
+                fetch(url).then((response1) => response1.json())
+                .then((responseJson1) => {
+                    console.log(responseJson1.items.item);
+                    let list_:any = [];
+                    responseJson1.items.item.map((data_: any, n:number) => {
+                        const carName = this.carAcc.data[data_.acc_ty_lclas_cd][data_.acc_ty_mlsfc_cd];
+                        list_.push({
+                            icon : 'car',
+                            key: n + 100,
+                            latitude: Number(data_.la_crd),
+                            longitude: Number(data_.lo_crd),
+                            Title: carName,
+                            pinColor : 'blue',
+                            carData : {"pop1" : data_.dth_dnv_cnt, 'pop2' : data_.injpsn_cnt}
+                         });
+                    });
+                    
+                    this.setState({
+                        markers: [...this.state.markers, ...list_],
+                    })
+                });
+            })
+            .catch((error) => console.log(error));
+    }
+
+    SearchFire = () => {
+        
+    }
+
+    SearchShelter = () => {
+
+    }
 
     render() {
         let serviceItems1 = config.SiList.map((s, i) => {
@@ -414,7 +466,17 @@ class Home extends React.Component {
                             >
                                 <Callout style={{zIndex:-1}} onPress={() => this.markerClick(marker.icon, Number(marker.latitude), Number(marker.longitude), marker.key)}>
                                     {/* <MapInfo ChId={Number(marker.key)} ChAddress={marker.Adress} ChCallNo={marker.CallNo} ChTitle={marker.Title}/> */}
+                                    {(marker.icon == 'hotel' || marker.icon == 'restaurant') && 
                                     <Text style={{height:45, textAlignVertical:'center', color:'black'}}>{marker.Title}</Text>
+                                    }
+                                    {marker.icon == 'car' &&
+                                    <View style={{width:'auto', height: 'auto'}}>
+                                        <Text style={{textAlignVertical:'center', color:'black'}}>사고 유형 : {marker.Title}</Text>
+                                        <Text style={{textAlignVertical:'center', color:'black'}}>사망자 수 : {marker.carData.pop1}</Text>
+                                        <Text style={{textAlignVertical:'center', color:'black'}}>부상자 수 : {marker.carData.pop2}</Text>
+                                    </View>
+                                        
+                                    }
                                 </Callout>
                             </Marker>
                         ))}
@@ -437,6 +499,9 @@ class Home extends React.Component {
                 } BTNstyle= {Styles.BTNStyle.Mapbutton} Textstyle= {Styles.BTNStyle.text}></IconButton>
             </View>
             }
+            <View style={{position: 'absolute', top: 271, right: 15, width: 180, height: 38}}>
+                <SafeInfo onClickEVT_car={this.SearchCar} onClickEVT_fire={this.SearchFire} onClickEVT_shelter={this.SearchShelter}/>
+            </View>
            <SlideUpAndDown RegionArray={this.Save_marker} DetailData={this.state.detail_} Curr_lan={this.Curr_lan1} Curr_log={this.Curr_log1}/>
 
         </View>

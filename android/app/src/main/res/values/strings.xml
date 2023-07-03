@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">safeApp</string>
+    <string name="app_name">안전한여행도우미</string>
     <string name="kakao_app_key">be8fe16f1e6fbde5ab02cdc213b120d5</string>
 </resources>
