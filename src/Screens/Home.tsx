@@ -13,8 +13,10 @@ import InterestGroup from '../Components/Group/InterestGroup';
 import SlideUpAndDown from '../Components/Group/SlideUpAndDown'
 import SafeInfo from '../Components/Information/SafeInfo'
 import { Double } from "react-native/Libraries/Types/CodegenTypes";
+import Geocoder from 'react-native-geocoding';
 
 class Home extends React.Component {
+    
     state = {
         Curr_lan : 36.143099,
         Curr_log : 128.392905,
@@ -33,6 +35,7 @@ class Home extends React.Component {
             pinColor : 'yellow',
             onEvent : () => {},
             carData: {pop1:0, pop2:0},
+            fireData : {addr: '', tel:''}
         }],
         Ready_Lo : false,
         ConWidth : responsiveWidth(100),
@@ -48,9 +51,14 @@ class Home extends React.Component {
     }
     Curr_lan1:Double = 0;
     Curr_log1:Double = 0;
+    count1 = 0;
+    count2 = 1000;
+    count3 = 2000;
+    count4 = 3000;
     //const Region_All:any;
     constructor(props:any){
         super(props);
+        Geocoder.init("AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs", {language : "ko"});
     }
     geoLocation = () => {
         GetLocation.getCurrentPosition({
@@ -89,6 +97,10 @@ class Home extends React.Component {
 
     async componentDidMount() {
         this.geoLocation();
+        this.count1 = 0;
+        this.count2 = 0;
+        this.count3 = 0;
+        this.count4 = 0;
     }
 
     deg2rad = (deg:any) =>
@@ -131,6 +143,7 @@ class Home extends React.Component {
     // Gubun3 : 복지시설, 할인음식점 둘 다 선택한 상태로 검색한 경우 -> 2
     Save_marker:any = new Array();
     onGetBokji = (Gubun:string, Gubun2:string, Gubun3:string) => {
+        this.count1 ++;
         let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/bokjihouseLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/bokjihouse_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
         //Alert.alert(reqUrl);
         
@@ -154,7 +167,7 @@ class Home extends React.Component {
                 //console.log(hrg)
                  hrg_list.push({
                     icon : 'hotel',
-                    key: Number(hrg.seq) + 2000,
+                    key: Number(hrg.seq) * this.count1,
                     latitude: Number(hrg.latitude),
                     longitude: Number(hrg.longitude),
                     CallNo: hrg.callnum,
@@ -223,7 +236,7 @@ class Home extends React.Component {
     };
 
     onGetRes = (Gubun:string, Gubun2:string, Gubun3:string) => {
-        
+        this.count2 ++;
         let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/restaurantLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/restaurant_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
         //console.log(reqUrl);
         fetch(reqUrl , {
@@ -245,7 +258,7 @@ class Home extends React.Component {
                 //console.log(hrg)
                 Res_list.push({
                     icon : 'restaurant',
-                    key: Number(hrg.seq) + 1000,
+                    key: Number(hrg.seq) * this.count2,
                     latitude: Number(hrg.latitude),
                     longitude: Number(hrg.longitude),
                     CallNo: hrg.callnum,
@@ -315,6 +328,7 @@ class Home extends React.Component {
     sidoJSON:any = JSON.parse(JSON.stringify(require('../Assets/Data/sido.json')));
     sigunguJSON:any = JSON.parse(JSON.stringify(require('../Assets/Data/sigungu.json')));
     carAcc:any = JSON.parse(JSON.stringify(require('../Assets/Data/carAccident.json')));
+    FS:any = JSON.parse(JSON.stringify(require('../Assets/Data/fireStation.json')));
     //this.state.Region_All = JSON.parse(JSON.stringify(MenuList_));
     selNumList:string = '';
     selsiReturn = (val: any) => {
@@ -337,12 +351,14 @@ class Home extends React.Component {
     };
   
     SearchCar = () => {
+        this.count3 ++;
         //geocoding써야해
         fetch('https://maps.googleapis.com/maps/api/geocode/json?language=ko&address=' + this.state.Curr_lan  + ',' + this.state.Curr_log + '&key=AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs')
             .then((response) => response.json())
             .then((responseJson) => {
                 const alladdr_ = responseJson.results[0].formatted_address;
                 const sido_ = alladdr_.split(/\s+/g)[1];
+                console.log(sido_);
                 const sigungu_ = alladdr_.split(/\s+/g)[2];
                 const sidoCode = this.sidoJSON.data[sido_];
                 const sigunguCode = this.sigunguJSON.data[sidoCode][sigungu_];
@@ -351,13 +367,13 @@ class Home extends React.Component {
                 console.log(url);
                 fetch(url).then((response1) => response1.json())
                 .then((responseJson1) => {
-                    console.log(responseJson1.items.item);
+                    //console.log(responseJson1.items.item);
                     let list_:any = [];
                     responseJson1.items.item.map((data_: any, n:number) => {
                         const carName = this.carAcc.data[data_.acc_ty_lclas_cd][data_.acc_ty_mlsfc_cd];
                         list_.push({
                             icon : 'car',
-                            key: n + 100,
+                            key: n  * this.count3,
                             latitude: Number(data_.la_crd),
                             longitude: Number(data_.lo_crd),
                             Title: carName,
@@ -375,7 +391,40 @@ class Home extends React.Component {
     }
 
     SearchFire = () => {
-        
+        this.count4 ++;
+        fetch('https://maps.googleapis.com/maps/api/geocode/json?language=ko&address=' + this.state.Curr_lan  + ',' + this.state.Curr_log + '&key=AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                const alladdr_ = responseJson.results[0].formatted_address;
+                const sido_ = alladdr_.split(/\s+/g)[1];
+                console.log(sido_);
+                const sigungu_ = alladdr_.split(/\s+/g)[2];
+                const sidoCode = this.sidoJSON.data[sido_];
+                console.log(sidoCode);
+                //const sigunguCode = this.sigunguJSON.data[sidoCode][sigungu_];
+                let list_:any = [];
+                
+                const list1 = this.FS.data[sidoCode];
+                list1.map((d1:any, n1:number) => {
+                    const gungu = d1.addr.split(/\s+/g)[1];
+                    if(sigungu_ == gungu){
+                        list_.push({
+                            icon : 'fire',
+                            key: n1  * this.count4,
+                            latitude: Number(d1.lat),
+                            longitude: Number(d1.lng),
+                            Title: d1.name,
+                            pinColor : '#cd1f48',
+                            fireData : {addr: d1.addr, tel:d1.tel}
+                        });
+                    }
+                });
+                this.setState({
+                    markers: [...this.state.markers, ...list_],
+                })
+                
+            })
+            .catch((error) => console.log(error));
     }
 
     SearchShelter = () => {
@@ -474,6 +523,15 @@ class Home extends React.Component {
                                         <Text style={{textAlignVertical:'center', color:'black'}}>사고 유형 : {marker.Title}</Text>
                                         <Text style={{textAlignVertical:'center', color:'black'}}>사망자 수 : {marker.carData.pop1}</Text>
                                         <Text style={{textAlignVertical:'center', color:'black'}}>부상자 수 : {marker.carData.pop2}</Text>
+                                    </View>
+                                        
+                                    }
+
+                                    {marker.icon == 'fire' &&
+                                    <View style={{width:'auto', height: 'auto'}}>
+                                        <Text style={{textAlignVertical:'center', color:'black'}}>{marker.Title}</Text>
+                                        <Text style={{textAlignVertical:'center', color:'black'}}>주소 : {marker.fireData.addr}</Text>
+                                        <Text style={{textAlignVertical:'center', color:'black'}}>전화번호 : {marker.fireData.tel}</Text>
                                     </View>
                                         
                                     }

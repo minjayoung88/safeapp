@@ -34,7 +34,7 @@ render() {
             <View style={{width: 180, position: 'absolute', top:3 , left: 7, height: 36, flexDirection:'row', backgroundColor:'white', opacity: 0.5, zIndex: 1}}></View>
             <View style={{width: 150, position: 'absolute', top:3 , left: 7, height: 36, flexDirection:'row', zIndex: 5}}>
               <FontAwesome5 name="car-crash" size={30} style={{marginLeft: 5}} color='blue' onPress={this.props.onClickEVT_car}/>
-              <MaterialCommunityIcons name="fire-alert" size={35} style={{marginLeft: 10}} color='purple' onPress={this.props.onClickEVT_fire}/>
+              <MaterialCommunityIcons name="fire-alert" size={35} style={{marginLeft: 10}} color='#cd1f48' onPress={this.props.onClickEVT_fire}/>
               <MaterialCommunityIcons name="greenhouse" size={35} style={{marginLeft: 7}} color='skyblue' onPress={this.props.onClickEVT_shelter}/>
             </View>
           </View>
