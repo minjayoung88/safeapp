@@ -30,14 +30,14 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
     const navigation:any = useNavigation();
     const NaviUrl = 'nmap://map?lat=37.4979502&lng=127.0276368&zoom=20&appname=com.safeapp';
     const ConnNavi = async (name:string, lat:Double, log:Double) => {
-      console.log("aaa");
+      //console.log("aaa");
       // Checking if the link is supported for links with custom URL scheme.
       const NaviUrl1 = 'nmap://route/public?slat='+Curr_lan+'&slng='+Curr_log+'&sname=현위치&dlat='+lat+'&dlng='+log+'&dname='+name+'&appname=com.example.myapp'
       const NaviUrl2 = 'tmap://route?goalname='+name+'&goalx='+log+'&goaly='+lat;
       const NaviUrl3 = 'kakaomap://route?sp='+Curr_lan+','+Curr_log+'&ep='+lat+','+log+'&by=CAR'
       let Map = '';
       let mapGubun = await AsyncStorage.getItem('map');
-      console.log("aaa");
+      //console.log("aaa");
       Map = mapGubun != null? mapGubun == 'naver'? NaviUrl1 : mapGubun == 'kakao'? NaviUrl3 : NaviUrl2 : NaviUrl1;
       
       const supported = await Linking.canOpenURL(Map);
@@ -48,17 +48,18 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
         console.log("안열림");
       }
     };
-    
+    const detailData_ = DetailData;
     useEffect(() => {
       //const enabled_ =  DetailData.icon != ""? true: false;
       Animated.timing(animation, {
-        toValue: enabled ? 530 : 90,
+        toValue: enabled ? 430 : 90,
         useNativeDriver: true,
       }).start();
     }, [animation, enabled]);
    
     const SearchDetail = (icon:string, lan:Double, log:Double, seq:number) => {
         //상세화면 불러오기
+        console.log(icon)
         let reqUrl = icon == "hotel"? 'http://jjsung.o-r.kr/defense/bokjihouse_detail?latitude=' + lan + '&longitude=' + log : 'http://jjsung.o-r.kr/defense/restaurant_detail?seq=' + seq
         console.log(reqUrl);
         fetch(reqUrl , {
@@ -159,8 +160,7 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
 
     if(DetailData.icon != ""){
       //상세화면 불러오기
-      if(DetailData.icon == 'hotel' || DetailData.icon == 'restaurant'){
-
+      if(DetailData.icon == "hotel" || DetailData.icon == "restaurant"){
         let reqUrl = DetailData.icon == "hotel"? 'http://jjsung.o-r.kr/defense/bokjihouse_detail?latitude=' + DetailData.lan + '&longitude=' + DetailData.log : 'http://jjsung.o-r.kr/defense/restaurant_detail?seq=' + DetailData.seq
         //console.log(reqUrl);
         fetch(reqUrl , {
@@ -168,12 +168,12 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-          //console.log(responseJson);
           //setDetail1([]); //초기화
           detailList1 = [];
           responseJson.map((data: any, n:number) => {
             if(n == 0){
-              if(DetailData.icon == 'hotel'){
+              if(typeof(data.alladdr) != "undefined"){
+                //console.log("hotel")
                 detailList1.push(
                   <View style={{marginTop:-37, marginLeft: 20}} key = {'View_' + n}>
                     <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10}}>{data.name}</Text>
@@ -204,6 +204,7 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
                   </View>
                 )
               }else{
+                console.log("res")
                 detailList1.push(
                   <View style={{marginTop:-37, marginLeft: 20}} key = {'View1_' + n}>
                     <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10}}>{data.store_name}</Text>
@@ -220,9 +221,11 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
                       <Text style={UStyle.detailStyle.content}>{data.benefit}</Text>
                     </View>
                   </View>
-                )}
+                )
+              }
             }
-            if(DetailData.icon == 'hotel'){
+            if(typeof(data.alladdr) != "undefined"){
+              //console.log("hotel")
               detailList1.push(
                 <View style={{ marginLeft: 20, marginTop:10}} key = {'hotel_' + n}>
                     <Text style={{color:"black", fontWeight:"bold"}}>{n+1}. {data.area}</Text>
@@ -244,18 +247,56 @@ const SlideUpAndDown = ({RegionArray, DetailData,Curr_lan, Curr_log}:Props) => {
               )
             }
           })
-
-          
+          setDetail(detailList1)
+          setMove(true)
+          DetailData.icon = "";
         })
-      //안전정보
-      } else{
-        
-      }
+      }else{
+        if(DetailData.icon == "fire"){
+          console.log("fire")
+            detailList1.push(
+              <View style={{marginTop:-37, marginLeft: 20}}>
+                <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10}}>{DetailData.Title}</Text>
+                <View style={[UStyle.detailStyle.View_, {borderTopWidth:1}]}>
+                  <TitleBox TXTholder="주소" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={50}></TitleBox>
+                  <Text style={UStyle.detailStyle.Callcontent} onPress={() => {ConnNavi(DetailData.Title, DetailData.lan, DetailData.log )}}>{DetailData.fireData.addr}</Text>
+                </View>
+                <View style={UStyle.detailStyle.View_}>
+                  <TitleBox TXTholder="전화번호" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
+                  <Text style={UStyle.detailStyle.Callcontent} onPress ={() => Linking.openURL(`tel:${DetailData.fireData.tel}`)}>{DetailData.fireData.tel}</Text>
+                </View>
+              </View>
+            )
+            setDetail(detailList1)
+            setMove(true)
+            DetailData.icon = "";
+        }
 
-      setDetail1(detailList1);
+        if(DetailData.icon == "Shelter"){
+          console.log("Shelter")
+            detailList1.push(
+              <View style={{marginTop:-37, marginLeft: 20}}>
+                <Text style={{marginLeft:50, fontSize:23, color:config.BackColor, fontWeight:"bold", marginBottom:10, width: responsiveWidth(100)-100}}>{DetailData.Title}</Text>
+                <View style={[UStyle.detailStyle.View_, {borderTopWidth:1}]}>
+                    <TitleBox TXTholder="분류" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} ></TitleBox>
+                      <Text style={UStyle.detailStyle.content}>{DetailData.shelData.category}</Text>
+                    </View>
+               
+                <View style={[UStyle.detailStyle.View_, {borderTopWidth:1}]}>
+                  <TitleBox TXTholder="주소" ViewStyle={UStyle.SelBox.View_style3} TXTkey="1" BoxWidth={70} height={50}></TitleBox>
+                  <Text style={UStyle.detailStyle.Callcontent} onPress={() => {ConnNavi(DetailData.Title, DetailData.lan, DetailData.log )}}>{DetailData.shelData.location1}</Text>
+                </View>
+                
+              </View>
+            )
+            setDetail(detailList1)
+            setMove(true)
+            DetailData.icon = "";
+        }
+      }
     }
     return (
-        <Animated.View style={{transform: [{translateY: animation}], position: 'absolute', bottom:70 , left: 0, width: responsiveWidth(100), height: responsiveHeight(100) - 305, backgroundColor:'white', borderRadius: 30, borderWidth:0.5, borderColor:'#d0d0d0' }}>
+        <Animated.View style={{transform: [{translateY: animation}], zIndex:10000,position: 'absolute', bottom:30 , left: 0, width: responsiveWidth(100), height: responsiveHeight(100) - 305, backgroundColor:'white', borderRadius: 30, borderWidth:0.5, borderColor:'#d0d0d0' }}>
           <View style={{height: responsiveHeight(100) - 310}}>
             <View style={{height: 40, borderBottomWidth: 1, borderColor: '#d0d0d0', width: responsiveWidth(100) - 20, marginLeft: 10, alignItems:'center'}} 
               onTouchEnd={() => { setEnabled(!enabled);}}>

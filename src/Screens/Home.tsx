@@ -35,7 +35,8 @@ class Home extends React.Component {
             pinColor : 'yellow',
             onEvent : () => {},
             carData: {pop1:0, pop2:0},
-            fireData : {addr: '', tel:''}
+            fireData : {addr: '', tel:''},
+            shelData: {category:'', location1:''},
         }],
         Ready_Lo : false,
         ConWidth : responsiveWidth(100),
@@ -46,15 +47,12 @@ class Home extends React.Component {
         Selsi: '강원도',
         Selsigun: '전체',
         Region_1 : new Array(),
-        detail_ : {icon:"", lan:0, log:0, seq:0},
+        detail_ : {icon:"", lan:0, log:0, seq:0, fireData:{}, carData:{}, Title:'', shelData:{}},
         Region_2 : ["전체", "강릉시","고성군","삼척시","속초시","양양군","토성군","평창군","홍천군","횡성군","원주시","춘천시"],
     }
+    
     Curr_lan1:Double = 0;
     Curr_log1:Double = 0;
-    count1 = 0;
-    count2 = 1000;
-    count3 = 2000;
-    count4 = 3000;
     //const Region_All:any;
     constructor(props:any){
         super(props);
@@ -88,19 +86,16 @@ class Home extends React.Component {
         })
     }
 
-    markerClick = (icon: string, lan:Double, log:Double, seq:number) => {
+    markerClick = (icon: string, lan:Double, log:Double, seq:number, fireData:any, carData:any, Title:string, shelData:any) => {
         //NavigationService.navigate('InfoHome', {screen: 'heritageInfo', ChId: chId});
-        if(icon == 'hotel' || icon == 'restaurant'){
-            this.setState({detail_:{icon: icon, lan : lan, log:log, seq:seq}});
+        if(icon != 'car'){
+            this.setState({detail_:{icon: icon, lan : lan, log:log, seq:seq, fireData: fireData, carData:carData, Title:Title, shelData: shelData}});
+            //this.detail_ = {icon: icon, lan : lan, log:log, seq:seq, fireData: fireData, carData:carData, Title:Title}
         }
     }
 
     async componentDidMount() {
         this.geoLocation();
-        this.count1 = 0;
-        this.count2 = 0;
-        this.count3 = 0;
-        this.count4 = 0;
     }
 
     deg2rad = (deg:any) =>
@@ -143,7 +138,6 @@ class Home extends React.Component {
     // Gubun3 : 복지시설, 할인음식점 둘 다 선택한 상태로 검색한 경우 -> 2
     Save_marker:any = new Array();
     onGetBokji = (Gubun:string, Gubun2:string, Gubun3:string) => {
-        this.count1 ++;
         let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/bokjihouseLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/bokjihouse_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
         //Alert.alert(reqUrl);
         
@@ -167,7 +161,7 @@ class Home extends React.Component {
                 //console.log(hrg)
                  hrg_list.push({
                     icon : 'hotel',
-                    key: Number(hrg.seq) * this.count1,
+                    //key: Number(hrg.seq) * this.count1,
                     latitude: Number(hrg.latitude),
                     longitude: Number(hrg.longitude),
                     CallNo: hrg.callnum,
@@ -236,7 +230,6 @@ class Home extends React.Component {
     };
 
     onGetRes = (Gubun:string, Gubun2:string, Gubun3:string) => {
-        this.count2 ++;
         let reqUrl = Gubun == "1"? 'http://jjsung.o-r.kr/defense/restaurantLocationNear?latitude=' + this.state.Curr_lan + '&longitude=' + this.state.Curr_log : 'http://jjsung.o-r.kr/defense/restaurant_basic?sido=' + this.state.Selsi + '&sigungu=' + this.state.Selsigun
         //console.log(reqUrl);
         fetch(reqUrl , {
@@ -258,7 +251,7 @@ class Home extends React.Component {
                 //console.log(hrg)
                 Res_list.push({
                     icon : 'restaurant',
-                    key: Number(hrg.seq) * this.count2,
+                    key: Number(hrg.seq),
                     latitude: Number(hrg.latitude),
                     longitude: Number(hrg.longitude),
                     CallNo: hrg.callnum,
@@ -351,11 +344,11 @@ class Home extends React.Component {
     };
   
     SearchCar = () => {
-        this.count3 ++;
         //geocoding써야해
         fetch('https://maps.googleapis.com/maps/api/geocode/json?language=ko&address=' + this.state.Curr_lan  + ',' + this.state.Curr_log + '&key=AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs')
             .then((response) => response.json())
             .then((responseJson) => {
+                console.log(responseJson);
                 const alladdr_ = responseJson.results[0].formatted_address;
                 const sido_ = alladdr_.split(/\s+/g)[1];
                 console.log(sido_);
@@ -373,7 +366,7 @@ class Home extends React.Component {
                         const carName = this.carAcc.data[data_.acc_ty_lclas_cd][data_.acc_ty_mlsfc_cd];
                         list_.push({
                             icon : 'car',
-                            key: n  * this.count3,
+                            //key: n  * this.count3,
                             latitude: Number(data_.la_crd),
                             longitude: Number(data_.lo_crd),
                             Title: carName,
@@ -391,7 +384,6 @@ class Home extends React.Component {
     }
 
     SearchFire = () => {
-        this.count4 ++;
         fetch('https://maps.googleapis.com/maps/api/geocode/json?language=ko&address=' + this.state.Curr_lan  + ',' + this.state.Curr_log + '&key=AIzaSyDcs_DDnzWq4EGxdz9Nr--Rq6vcMiiBdNs')
             .then((response) => response.json())
             .then((responseJson) => {
@@ -410,7 +402,7 @@ class Home extends React.Component {
                     if(sigungu_ == gungu){
                         list_.push({
                             icon : 'fire',
-                            key: n1  * this.count4,
+                            //key: n1  * this.count4,
                             latitude: Number(d1.lat),
                             longitude: Number(d1.lng),
                             Title: d1.name,
@@ -428,7 +420,29 @@ class Home extends React.Component {
     }
 
     SearchShelter = () => {
-
+        var url = 'http://jjsung.o-r.kr/defense/shelterLocationNear?latitude='+this.state.Curr_lan+'&longitude=' + this.state.Curr_log
+        console.log(url);
+        fetch(url).then((response1) => response1.json())
+        .then((responseJson1) => {
+            console.log(responseJson1);
+            let list_:any = [];
+            responseJson1.map((data_: any, n:number) => {
+                list_.push({
+                    icon : 'Shelter',
+                    //key: n  * this.count3,
+                    latitude: Number(data_.latitude),
+                    longitude: Number(data_.longitude),
+                    Title: data_.buildingname,
+                    pinColor : 'skyblue',
+                    shelData : {category : data_.category, location1 : data_.location1}
+                 });
+            });
+                    
+            this.setState({
+                markers: [...this.state.markers, ...list_],
+            })
+        });
+           
     }
 
     render() {
@@ -464,7 +478,6 @@ class Home extends React.Component {
                         </Picker>
                     </View>
                     <Feather name="search" color="black" size={30} style={{marginTop:5}} onPress={() => {
-                        
                             const arr_ = this.selNumList.split(',');
                             //둘다 선택되어진경우, 복지시설 -> 할인음식점 순서대로
                             //console.log("선택값 :" +arr_);
@@ -494,16 +507,15 @@ class Home extends React.Component {
                 showsMyLocationButton={true}
                 showsUserLocation={true}
             >
-                {this.state.markers.map(marker => (
+                {this.state.markers.map((marker,i) => (
                             <Marker
                                 coordinate={{
                                     latitude: Number(marker.latitude),
                                     longitude: Number(marker.longitude),
                                 }}
-                                
-                                key= {Number(marker.key)}
                                 pinColor={marker.pinColor}
                                 zIndex={-1}
+                                key={i}
                                 onPress={() => 
                                 {
                                     this.setState({
@@ -513,9 +525,9 @@ class Home extends React.Component {
                                     })
                                 }}
                             >
-                                <Callout style={{zIndex:-1}} onPress={() => this.markerClick(marker.icon, Number(marker.latitude), Number(marker.longitude), marker.key)}>
+                                <Callout style={{zIndex:-1}} onPress={() => this.markerClick(marker.icon, Number(marker.latitude), Number(marker.longitude), marker.key, marker.fireData, marker.carData, marker.Title, marker.shelData)}>
                                     {/* <MapInfo ChId={Number(marker.key)} ChAddress={marker.Adress} ChCallNo={marker.CallNo} ChTitle={marker.Title}/> */}
-                                    {(marker.icon == 'hotel' || marker.icon == 'restaurant') && 
+                                    {marker.icon != 'car' && 
                                     <Text style={{height:45, textAlignVertical:'center', color:'black'}}>{marker.Title}</Text>
                                     }
                                     {marker.icon == 'car' &&
@@ -524,16 +536,6 @@ class Home extends React.Component {
                                         <Text style={{textAlignVertical:'center', color:'black'}}>사망자 수 : {marker.carData.pop1}</Text>
                                         <Text style={{textAlignVertical:'center', color:'black'}}>부상자 수 : {marker.carData.pop2}</Text>
                                     </View>
-                                        
-                                    }
-
-                                    {marker.icon == 'fire' &&
-                                    <View style={{width:'auto', height: 'auto'}}>
-                                        <Text style={{textAlignVertical:'center', color:'black'}}>{marker.Title}</Text>
-                                        <Text style={{textAlignVertical:'center', color:'black'}}>주소 : {marker.fireData.addr}</Text>
-                                        <Text style={{textAlignVertical:'center', color:'black'}}>전화번호 : {marker.fireData.tel}</Text>
-                                    </View>
-                                        
                                     }
                                 </Callout>
                             </Marker>
@@ -560,7 +562,7 @@ class Home extends React.Component {
             <View style={{position: 'absolute', top: 271, right: 15, width: 180, height: 38}}>
                 <SafeInfo onClickEVT_car={this.SearchCar} onClickEVT_fire={this.SearchFire} onClickEVT_shelter={this.SearchShelter}/>
             </View>
-           <SlideUpAndDown RegionArray={this.Save_marker} DetailData={this.state.detail_} Curr_lan={this.Curr_lan1} Curr_log={this.Curr_log1}/>
+           <SlideUpAndDown RegionArray={this.Save_marker} DetailData={this.state.detail_} Curr_lan={this.Curr_lan1} Curr_log={this.Curr_log1} />
 
         </View>
          
